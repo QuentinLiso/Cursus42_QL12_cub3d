@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 10:17:38 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/16 18:51:30 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/16 22:13:48 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,7 @@ void    draw_line(t_img *img, t_vector2 u, t_vector2 v, int color);
 void	put_pix_to_img(t_img *img, int x, int y, int color);
 
 float   distance(t_vector2 u, t_vector2 v);
-
+float   clamp(float value, float min, float max);
 
 int	    handle_keypress_input(int keysym, t_scene *scene);
 void    handle_keypress_wasd(int keysym, t_scene *scene);

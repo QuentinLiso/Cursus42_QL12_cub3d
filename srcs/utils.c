@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 15:54:40 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/16 19:34:35 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/16 22:28:06 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,7 @@ void    draw_raycast(t_scene *scene)
 
 void    set_ray_fov_and_angle(t_scene *scene, t_raycast *ray)
 {
-    ray->fov = 10;
+    ray->fov = 60;
     ray->ra = scene->p_a - DR * (ray->fov / 2);
     if (ray->ra < 0)
         ray->ra += 2 * PI;
@@ -227,8 +227,9 @@ void    set_ray_horizontal_collision(t_scene *scene, t_raycast *ray)
         }
         else
         {
-            ray->hx += ray->xo;
+            ray->hx = clamp(ray->hx + ray->xo, scene->map_s, scene->map_s * (scene->map_x - 1));
             ray->hy += ray->yo;
+            // ray->hy = clamp(ray->hy + ray->yo, scene->map_s, scene->map_s * (scene->map_y - 1));
             ray->dof++;
         }
     }
@@ -238,14 +239,14 @@ void    set_ray_vertical_start_orientation(t_scene *scene, t_raycast *ray)
 {
     ray->dof = 0;
     ray->nTan = -tan(ray->ra);
-    if (ray->ra > PI / 2 && ray->ra < 3 * PI / 2)
+    if (ray->ra > PI / 2 && ray->ra < 3 * PI / 2)   // Looking left
     {
-        ray->vx = (((int)scene->p_x >> 6) << 6) - 0.001;
+        ray->vx = (((int)scene->p_x >> 6) << 6) - 0.0001;
         ray->vy = (scene->p_x - ray->vx) * ray->nTan + scene->p_y;
         ray->xo = -64;
         ray->yo = -ray->xo * ray->nTan;
     }
-    if (ray->ra < PI / 2 || ray->ra > 3 * PI / 2)
+    if (ray->ra < PI / 2 || ray->ra > 3 * PI / 2)   // Looking right
     {
         ray->vx = (((int)scene->p_x >> 6) << 6) + 64;
         ray->vy = (scene->p_x - ray->vx) * ray->nTan + scene->p_y;
@@ -268,7 +269,8 @@ void    set_ray_vertical_collision(t_scene *scene, t_raycast *ray)
         ray->mx = (int)(ray->vx) >> 6;
         ray->my = (int)(ray->vy) >> 6;
         ray->mp = ray->my * scene->map_x + ray->mx;
-        if ((ray->mp >= 0) && (ray->mp < scene->map_x * scene->map_y) && (scene->map[ray->mp] == 1))
+        if (
+            (ray->mp >= 0) && (ray->mp < scene->map_x * scene->map_y) && (scene->map[ray->mp] == 1))
         {
             ray->dof = 8;
             ray->v_dist = distance((t_vector2){scene->p_x, scene->p_y},
@@ -276,8 +278,9 @@ void    set_ray_vertical_collision(t_scene *scene, t_raycast *ray)
         }
         else
         {
+            // ray->vx = clamp(ray->vx + ray->xo, scene->map_s, scene->map_s * (scene->map_x - 1));
             ray->vx += ray->xo;
-            ray->vy += ray->yo;
+            ray->vy = clamp(ray->vy + ray->yo, scene->map_s, scene->map_s * (scene->map_y - 1));
             ray->dof++;
         }
     }
@@ -347,7 +350,15 @@ float   distance(t_vector2 u, t_vector2 v)
     return (sqrt((v.x - u.x) * (v.x - u.x) + (v.y - u.y) * (v.y - u.y)));
 }
 
-
+float   clamp(float value, float min, float max)
+{
+    if (value < min)
+        return (min);
+    else if (value > max)
+        return (max);
+    else
+        return (value);
+}
 
 // =======================================================
 
