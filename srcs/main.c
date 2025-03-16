@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 10:16:42 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/15 15:56:01 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/15 18:12:55 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,19 @@ int main(void)
 {
     t_scene scene;
 
+    int map[] = 
+    {
+        1, 1, 1, 1, 1, 1, 1, 1,
+        1, 0, 1, 0, 0, 0, 0, 1,
+        1, 0, 1, 0, 0, 0, 0, 1,
+        1, 0, 1, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 1, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 1,
+        1, 1, 1, 1, 1, 1, 1, 1,
+    };
     ft_bzero(&scene, sizeof(t_scene));
-    init_scene(&scene);
+    init_scene(&scene, map);
     set_display_elems(&scene);
     set_loops(&scene);
     return (0);
