@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 15:54:40 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/16 22:28:06 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/17 09:03:33 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,6 @@ int update_render(t_scene *scene)
 
 void    draw_elements(t_scene *scene)
 {
-    printf("============================\n");
     draw_background(scene->img);
     draw_map(scene);
     draw_raycast(scene);
@@ -149,23 +148,18 @@ void    draw_raycast(t_scene *scene)
     ray.v_dist = 1000000;
     while (ray.r++ < ray.fov)
     {
-        printf("******** Ray n° %d : ***********\n", ray.r);
         set_ray_horizontal_start_orientation(scene, &ray);
         set_ray_horizontal_collision(scene, &ray);
         set_ray_vertical_start_orientation(scene, &ray);
         set_ray_vertical_collision(scene, &ray);
-        if (ray.h_dist <  ray.v_dist)
-            ray.ray_vect = (t_vector2){ray.hx, ray.hy};
-        if (ray.v_dist <  ray.h_dist)
-            ray.ray_vect = (t_vector2){ray.vx, ray.vy};
+        set_ray_distance(scene, &ray);
         draw_line(scene->img, (t_vector2){scene->p_x, scene->p_y},
                 ray.ray_vect, GREEN);
+        draw_walls(scene, &ray, ray.proj_color);
         increment_ray_angle(&ray);
-        // printf("Horizontal : (%f, %f) ; Vertical : (%f, %f)\n", ray.hx, ray.hy, ray.vx, ray.vy);
     }
     
 }
-
 
 void    set_ray_fov_and_angle(t_scene *scene, t_raycast *ray)
 {
@@ -229,7 +223,6 @@ void    set_ray_horizontal_collision(t_scene *scene, t_raycast *ray)
         {
             ray->hx = clamp(ray->hx + ray->xo, scene->map_s, scene->map_s * (scene->map_x - 1));
             ray->hy += ray->yo;
-            // ray->hy = clamp(ray->hy + ray->yo, scene->map_s, scene->map_s * (scene->map_y - 1));
             ray->dof++;
         }
     }
@@ -265,7 +258,6 @@ void    set_ray_vertical_collision(t_scene *scene, t_raycast *ray)
 {
     while (ray->dof < 8)
     {
-        printf("x : %f, y : %f\n", ray->vx, ray->vy);
         ray->mx = (int)(ray->vx) >> 6;
         ray->my = (int)(ray->vy) >> 6;
         ray->mp = ray->my * scene->map_x + ray->mx;
@@ -278,13 +270,47 @@ void    set_ray_vertical_collision(t_scene *scene, t_raycast *ray)
         }
         else
         {
-            // ray->vx = clamp(ray->vx + ray->xo, scene->map_s, scene->map_s * (scene->map_x - 1));
             ray->vx += ray->xo;
             ray->vy = clamp(ray->vy + ray->yo, scene->map_s, scene->map_s * (scene->map_y - 1));
             ray->dof++;
         }
     }
 }
+
+void    set_ray_distance(t_scene *scene, t_raycast *ray)
+{
+    if (ray->h_dist <  ray->v_dist)
+    {
+        ray->ray_vect = (t_vector2){ray->hx, ray->hy};
+        ray->proj_color = RED;
+    }
+    if (ray->v_dist <  ray->h_dist)
+    {
+        ray->ray_vect = (t_vector2){ray->vx, ray->vy};
+        ray->proj_color = DARK_RED;
+    }
+    ray->ray_dist = distance((t_vector2){scene->p_x, scene->p_y},
+            ray->ray_vect);
+}
+
+
+void    draw_walls(t_scene *scene, t_raycast *ray, int color)
+{
+    float   lineH;
+    float   lineO;
+    float   ca;
+
+    ca = scene->p_a - ray->ra;
+    if (ca < 0)
+        ca += 2 * PI;
+    if (ca > 2 * PI)
+        ca -= 2 * PI;
+    ray->ray_dist *= cos(ca);
+    lineH = clamp(scene->map_s * 240 / ray->ray_dist, 0, 240);
+    lineO = 210 - lineH / 2;
+    draw_rect(scene->img, (t_rect){ray->r * 8 + 530, lineO, 8, lineH + lineO}, color);
+}
+
 
 // =======================================================
 

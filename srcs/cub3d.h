@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 10:17:38 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/16 22:13:48 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/17 08:55:55 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@
 # define BLACK 0x000000
 # define DARK 0x0F0F0F
 # define GRAY 0x4C585B
-# define RED 0x992E24
+# define RED 0xCE1212
+# define DARK_RED 0x810000
 # define BLUE 0x4287f5
 # define GREEN 0x1F6650
 # define YELLOW 0xFFE26F
@@ -65,8 +66,10 @@ typedef struct s_raycast
     int mp;     // to get the index in the map to check if it's 1 or 0
     int dof;    // depth of field
     int fov;
+    int proj_color;
 
     t_vector2   ray_vect;
+    float       ray_dist;
     float   ra;     // ray angle
     float   aTan;   // arc tan of ray angle
     float   nTan;
@@ -138,7 +141,8 @@ void    set_ray_horizontal_start_orientation(t_scene *scene, t_raycast *ray);
 void    set_ray_horizontal_collision(t_scene *scene, t_raycast *ray);
 void    set_ray_vertical_start_orientation(t_scene *scene, t_raycast *ray);
 void    set_ray_vertical_collision(t_scene *scene, t_raycast *ray);
-
+void    set_ray_distance(t_scene *scene, t_raycast *ray);
+void    draw_walls(t_scene *scene, t_raycast *ray, int color);
 
 void    draw_rect(t_img *img, t_rect rect, int color);
 void    draw_line(t_img *img, t_vector2 u, t_vector2 v, int color);
