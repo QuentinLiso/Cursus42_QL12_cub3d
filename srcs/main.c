@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 15:28:52 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/17 18:52:44 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/17 19:00:38 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void    draw_map(t_game *game)
     int     y;
 
     map = game->map;
-    color = 0x0000FF;
+    color = 0xFF0000;
     y = -1;
     while (map[++y])
     {
@@ -149,7 +149,6 @@ void    draw_line(t_player *player, t_game *game, float start, int i)
     float   x_angle;
     float   y_angle;
     t_line  line;
-    (void)i;
 
     x_angle = cos(start);
     y_angle = sin(start);
@@ -158,7 +157,7 @@ void    draw_line(t_player *player, t_game *game, float start, int i)
     while (!touch(player->x_ray, player->y_ray, game))
     {
         if (game->debug)
-            put_pixel(player->x_ray, player->y_ray, 0xFF0000, game);
+            put_pixel(player->x_ray, player->y_ray, 0x0000FF, game);
         player->x_ray += x_angle;
         player->y_ray += y_angle;
     }
@@ -169,7 +168,7 @@ void    draw_line(t_player *player, t_game *game, float start, int i)
     while (line.start_y < line.end)
     {
         if (!game->debug)
-            put_pixel(i, line.start_y, 0x0000FF, game);
+            put_pixel(i, line.start_y, 0xFF0000, game);
         line.start_y++;
     }
 }
