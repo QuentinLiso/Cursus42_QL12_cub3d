@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 15:29:25 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/17 18:52:35 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/17 19:15:21 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void    init_player(t_player *player)
     player->x = WIDTH / 2;
     player->y = HEIGHT / 2;
     player->speed = 3;
-    player->angle = PI / 2;
+    player->angle = PI;
     player->angle_speed = 0.03;
     
     player->key_up = false;

@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 15:28:52 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/17 19:00:38 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/17 19:14:48 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,13 +101,13 @@ char    **get_map(void)
         return (NULL);
     map[0] = "111111111111111";
     map[1] = "100000000000001";
-    map[2] = "100000000000001";
+    map[2] = "111001000010001";
     map[3] = "100000000000001";
-    map[4] = "100001000000001";
+    map[4] = "101001000000001";
     map[5] = "100000000000001";
-    map[6] = "100000000000001";
-    map[7] = "100001000000001";
-    map[8] = "101000000000001";
+    map[6] = "110000000000001";
+    map[7] = "100001000000101";
+    map[8] = "101000000000101";
     map[9] = "111111111111111";
     map[10] = NULL;
     return (map);
@@ -144,6 +144,24 @@ float   fixed_distance(t_player *player)
     return (fix_dist);
 }
 
+void    draw_sky(t_game *game, t_line *line, int i)
+{
+    int y;
+
+    y = -1;
+    while (++y < line->start_y)
+        put_pixel(i, y, 0xA1E3F9, game);
+}
+
+void    draw_ground(t_game *game, t_line *line, int i)
+{
+    int y;
+
+    y = line->end - 1;
+    while (y++ < HEIGHT)
+        put_pixel(i, y, 0xA27B5C, game);
+}
+
 void    draw_line(t_player *player, t_game *game, float start, int i)
 {
     float   x_angle;
@@ -161,16 +179,19 @@ void    draw_line(t_player *player, t_game *game, float start, int i)
         player->x_ray += x_angle;
         player->y_ray += y_angle;
     }
+    if (game->debug)
+        return ;
     line.dist = fixed_distance(player);
     line.height = (BLOCK / line.dist) * (WIDTH / 2);
     line.start_y = (HEIGHT - line.height) / 2;
     line.end = line.start_y + line.height;
+    draw_sky(game, &line, i);
     while (line.start_y < line.end)
     {
-        if (!game->debug)
-            put_pixel(i, line.start_y, 0xFF0000, game);
+        put_pixel(i, line.start_y, 0x4C585B, game);
         line.start_y++;
     }
+    draw_ground(game, &line, i);
 }
 
 
