@@ -5,23 +5,31 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/20 08:16:09 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/21 16:07:09 by qliso            ###   ########.fr       */
+/*   Created: 2025/03/15 10:16:42 by qliso             #+#    #+#             */
+/*   Updated: 2025/03/17 13:18:33 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-int main(int ac, char **av)
+int main(void)
 {
-    (void)ac;(void)av;
-    t_game  game;
+    t_scene scene;
 
-    // if (ac != 2)
-    //     return (perror_c3d("Wrong args", EINVAL));
-    init_game(&game);
-    parse_args(&game, av);
-    print_strarr(game.mapdata.filecontent);
-    print_textures(game.textures);  
+    int map[] = 
+    {
+        1, 1, 1, 1, 1, 1, 1, 1,
+        1, 0, 1, 0, 0, 0, 0, 1,
+        1, 0, 1, 0, 0, 0, 0, 1,
+        1, 0, 1, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 1, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 1,
+        1, 1, 1, 1, 1, 1, 1, 1,
+    };
+    ft_bzero(&scene, sizeof(t_scene));
+    init_scene(&scene, map);
+    set_display_elems(&scene);
+    set_loops(&scene);
     return (0);
 }

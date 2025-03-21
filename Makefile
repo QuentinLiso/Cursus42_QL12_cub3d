@@ -6,7 +6,7 @@
 #    By: qliso <qliso@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/15 10:15:28 by qliso             #+#    #+#              #
-#    Updated: 2025/03/15 16:05:35 by qliso            ###   ########.fr        #
+#    Updated: 2025/03/21 14:33:36 by qliso            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,6 +14,7 @@ SRCS=$(addprefix ./srcs/, \
 		$(addsuffix .c, \
 			main \
 			utils \
+			helpers \
 		)\
 	)
 OBJ=$(SRCS:%.c=%.o)
@@ -25,7 +26,7 @@ LIB_FOLD=./libft/
 MLX=libmlx.a
 MLX_FOLD=./minilibx-linux/
 
-CCFLAGS=-Wall -Werror -Wextra
+CCFLAGS=-Wall -Werror -Wextra -g
 IFLAGS=-I./minilibx-linux -I./libft/includes
 LFLAGS=-L./minilibx-linux -L./libft -lmlx -lXext -lX11 -lft -lm
 
@@ -39,6 +40,8 @@ WHITE=\033[0;37m
 
 all 	: $(LIB) $(MLX) $(NAME) 
 
+ess		: $(LIB) $(MLX)
+		  $(CC) $(CCFLAGS) $(IFLAGS) srcs/ess.c -o ess $(LFLAGS)
 
 $(LIB)	: $(LIB_FOLD)$(LIB)
 

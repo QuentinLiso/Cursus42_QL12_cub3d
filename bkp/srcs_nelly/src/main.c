@@ -3,25 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
+/*   By: nefadli <nefadli@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/20 08:16:09 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/21 16:07:09 by qliso            ###   ########.fr       */
+/*   Created: 2025/03/07 15:36:46 by nefadli           #+#    #+#             */
+/*   Updated: 2025/03/07 16:41:50 by nefadli          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "cube3d.h"
 
-int main(int ac, char **av)
+int main() 
 {
-    (void)ac;(void)av;
-    t_game  game;
 
-    // if (ac != 2)
-    //     return (perror_c3d("Wrong args", EINVAL));
-    init_game(&game);
-    parse_args(&game, av);
-    print_strarr(game.mapdata.filecontent);
-    print_textures(game.textures);  
-    return (0);
 }
