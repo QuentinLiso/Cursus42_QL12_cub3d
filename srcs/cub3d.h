@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 08:16:11 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/21 16:42:33 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/22 13:26:25 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ typedef struct s_vec2D
 typedef struct s_player
 {
     char        orientation;
+    t_vec2Di    spawn;
     t_vec2D     pos;
     t_vec2D     dir;
     t_vec2D     plane;
@@ -182,14 +183,25 @@ void    init_mapdata(t_mapdata *mapdata);
 void    init_empty_img(t_img *img);
 
 int parse_args(t_game *game, char **av);
+
 int check_valid_file(char *av, char *ext);
 bool    check_file_isdir(char *av);
 bool    check_file_ext(char *av, char *ext);
+
 int    store_file_data(t_game *game, char *filepath);
 int get_line_count(char *filepath);
 int fill_filecontent(t_game *game);
 
 int parse_filecontent(t_game *game);
+int build_map(t_game *game, char **content, int i);
+int     skip_empty_lines(char **content, int *i);
+bool    is_empty_line(char *line);
+int     check_validity(t_game *game, char **map);
+int check_edge_line(t_game *game, char *line);
+int check_other_line(t_game *game, char *line, char *prev, char *next);
+bool    str_contain(char *str, char c);
+bool     check_nswe(char *line, int j, char *prev, char *next);
+
 bool    tex_and_colors_filled(t_game *game);
 int parse_line_tex(t_game *game, char *line);
 int get_texture_and_colors(t_game *game, char *line, int i);
@@ -200,5 +212,7 @@ int get_rgb(char *line, uint *rgb, int i);
 int get_r(char *line, uint *rgb, int *i);
 int get_g(char *line, uint *rgb, int *i);
 int get_b(char *line, uint *rgb, int *i);
+
+
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 08:16:07 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/21 16:46:40 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/22 13:29:52 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,6 +135,7 @@ void    init_game(t_game *game)
 void    init_player(t_player *player)
 {
     player->orientation = 0;
+    player->spawn = (t_vec2Di){0, 0};
     player->pos = (t_vec2D){0.0, 0.0};
     player->dir = (t_vec2D){0.0, 0.0};
     player->plane = (t_vec2D){0.0, 0.0};
@@ -194,6 +195,8 @@ int parse_args(t_game *game, char **av)
     return (0);
 }
 
+// ========================================== Parse args : check valid file
+
 int check_valid_file(char *av, char *ext)
 {
     int fd;
@@ -246,6 +249,8 @@ bool    check_file_ext(char *av, char *ext)
         return (false);
     return (true);
 }
+
+// ========================================== Parse args : store file data
 
 int    store_file_data(t_game *game, char *filepath)
 {
@@ -333,28 +338,127 @@ int parse_filecontent(t_game *game)
     }
     if (!tex_and_colors_filled(game))
         return (-1);
-    status = build_map(game, &content[i]);
+    status = build_map(game, content, i);
     return (status);
 }
 
-int build_map(t_game *game, char **content)
+int build_map(t_game *game, char **content, int i)
 {
-    
-}
+    char    **map;
 
-int parse_line_map(t_game *game, char *line)
-{
-    int i;
-    int status;
-
-    i = 0;
-    status = 0;
-    skip_blank(line, &i);
-    if (!line[i])
-        return (1);
+    if (skip_empty_lines(content, &i))
+        return (-1);
+    map = &content[i];
+    if (check_validity(game, map))
+        return (-1);
+    // game->map = ft_calloc(sizeof(char *), end - start + 2);
+    // if (!game->map)
+    //     return (-1);
+    // i = -1;
+    // while (++i < end - start + 1)
+    //     game->map[i] = content[start + i];
+    // game->map[i] = NULL;
     return (0);
 }
 
+int     skip_empty_lines(char **content, int *i)
+{
+    while (content[*i] && is_empty_line(content[*i]))
+        (*i)++;
+    if (!content[*i])
+        return (-1);
+    return (0);
+}
+
+bool    is_empty_line(char *line)
+{
+    int i;
+
+    i = 0;
+    skip_blank(line, &i);
+    if (!line[i])
+        return (true);
+    return(false);
+}
+
+int     check_validity(t_game *game, char **map)
+{
+    int i;
+
+    if (check_edge_line(game, map[0]))
+        return (-1);
+    i = 1;
+    while (map[i] && map[i + 1])
+    {
+        if (check_other_line(game, map[i], map[i - 1], map[i + 1]))
+            return (-1);
+        i++;
+    }
+    if (check_edge_line(game, map[i]))
+        return (-1);
+    game->mapdata.height = i;
+    return (0);
+}
+
+int check_edge_line(t_game *game, char *line)
+{
+    int j;
+
+    j = 0;
+    while (line[j] && line[j] != '\n')
+    {
+        if (line[j] != '1' && line[j] != ' ')
+            return (-1);
+        j++;
+    }
+    if (!j)
+        return (-1);
+    game->mapdata.width = j - 1;
+    return (0);
+}
+
+int check_other_line(t_game *game, char *line, char *prev, char *next)
+{
+    int j;
+
+    j = 0;
+    if (str_contain("0NSWE", line[0]))
+        return (-1);
+    while (line[j] && line[j] != '\n')
+    {
+        if (str_contain("NSWE", line[j]))
+        {
+            if (!check_nswe(line, j, prev, next) || game->player.orientation)
+                return (-1);
+            game->player.orientation = line[j];
+        }
+        else if (!str_contain("10 ", line[j]))
+            return (-1);
+        j++;
+    }
+    if (j > 0 && line[j - 1] == '0')
+        return (-1);
+    if (j - 1 > game->mapdata.width)
+        game->mapdata.width = j - 1;
+    return (0);
+}
+
+bool    str_contain(char *str, char c)
+{
+    int i;
+
+    i = -1;
+    while (str[++i])
+        if (c == str[i])
+            return (true);
+    return (false);
+}
+
+bool     check_nswe(char *line, int j, char *prev, char *next)
+{
+    return ((prev[j] && prev[j] == '0') || (next[j] && next[j] == '0') ||
+        line[j - 1] == '0' || line[j + 1] == '0');
+}
 
 // ====================================== PARSE TEXTURES AND COLORS LINES
 
@@ -585,3 +689,5 @@ int get_b(char *line, uint *rgb, int *i)
     *rgb += b_value;
     return (0);
 }
+
+// =========================================== BUILD MAP
