@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 08:16:07 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/22 13:29:52 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/22 19:50:45 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -351,13 +351,12 @@ int build_map(t_game *game, char **content, int i)
     map = &content[i];
     if (check_validity(game, map))
         return (-1);
-    // game->map = ft_calloc(sizeof(char *), end - start + 2);
-    // if (!game->map)
-    //     return (-1);
-    // i = -1;
-    // while (++i < end - start + 1)
-    //     game->map[i] = content[start + i];
-    // game->map[i] = NULL;
+    if (fill_game_map(game, map))
+        return (-1);
+    if (!valid_nswe_side(game))
+        return (-1);
+    if (check_flood_fill(game))
+        return (-1);
     return (0);
 }
 
@@ -390,13 +389,15 @@ int     check_validity(t_game *game, char **map)
     i = 1;
     while (map[i] && map[i + 1])
     {
-        if (check_other_line(game, map[i], map[i - 1], map[i + 1]))
+        if (check_other_line(game, map, i))
             return (-1);
         i++;
     }
+    if (i < 3)
+        return (-1);
     if (check_edge_line(game, map[i]))
         return (-1);
-    game->mapdata.height = i;
+    game->mapdata.height = i + 1;
     return (0);
 }
 
@@ -413,33 +414,35 @@ int check_edge_line(t_game *game, char *line)
     }
     if (!j)
         return (-1);
-    game->mapdata.width = j - 1;
+    if (j > game->mapdata.width)
+        game->mapdata.width = j;
     return (0);
 }
 
-int check_other_line(t_game *game, char *line, char *prev, char *next)
+int check_other_line(t_game *game, char **map, int i)
 {
     int j;
 
     j = 0;
-    if (str_contain("0NSWE", line[0]))
+    if (str_contain("0NSWE", map[i][0]))
         return (-1);
-    while (line[j] && line[j] != '\n')
+    while (map[i][j] && map[i][j] != '\n')
     {
-        if (str_contain("NSWE", line[j]))
+        if (str_contain("NSWE", map[i][j]) && !check_nswe(game, map, i, j))
+            return (-1);
+        else if (str_contain("NSWE", map[i][j]) && check_nswe(game, map, i, j))
         {
-            if (!check_nswe(line, j, prev, next) || game->player.orientation)
-                return (-1);
-            game->player.orientation = line[j];
+            game->player.orientation = map[i][j];
+            game->player.spawn = (t_vec2Di){j, i};
         }
-        else if (!str_contain("10 ", line[j]))
+        else if (!str_contain("10 ", map[i][j]))
             return (-1);
         j++;
     }
-    if (j > 0 && line[j - 1] == '0')
+    if (j > 0 && str_contain("0NSWE", map[i][j - 1]))
         return (-1);
-    if (j - 1 > game->mapdata.width)
-        game->mapdata.width = j - 1;
+    if (j > game->mapdata.width)
+        game->mapdata.width = j;
     return (0);
 }
 
@@ -454,11 +457,101 @@ bool    str_contain(char *str, char c)
     return (false);
 }
 
-bool     check_nswe(char *line, int j, char *prev, char *next)
+bool    check_nswe(t_game *game, char **map, int i, int j)
 {
-    return ((prev[j] && prev[j] == '0') || (next[j] && next[j] == '0') ||
-        line[j - 1] == '0' || line[j + 1] == '0');
+    if (game->player.orientation ||
+        map[i][j + 1] == '\0' || map[i][j + 1] == '\n')
+        return (false);
+    return (true);
 }
+
+int fill_game_map(t_game *game, char **map)
+{
+    int i;
+    int j;
+    int height;
+    int width;
+
+    height = game->mapdata.height;
+    width = game->mapdata.width;
+    game->map = ft_calloc(height + 1, sizeof(char *));
+    if (!game->map)
+        return (-1);
+    i = -1;
+    while (++i < height)
+    {
+        game->map[i] = ft_calloc(width + 1, sizeof(char));
+        if (!game->map[i])
+            return (-1);
+        j = -1;
+        while (map[i][++j] && map[i][j] != '\n')
+            game->map[i][j] = map[i][j];
+        while (j < width)
+            game->map[i][j++] = ' ';
+        game->map[i][j] = '\0';
+    }
+    game->map[i] = NULL;
+    return (0);
+}
+
+bool valid_nswe_side(t_game *game)
+{
+    t_vec2Di    spawn;
+    char        **map;
+
+    spawn = game->player.spawn;
+    map = game->map;
+    return ((map[spawn.y - 1][spawn.x] == '0' ||
+            map[spawn.y + 1][spawn.x] == '0' ||
+            map[spawn.y][spawn.x - 1] == '0' || 
+            map[spawn.y][spawn.x + 1] == '0'));
+}
+
+int check_flood_fill(t_game *game)
+{
+    int x;
+    int y;
+    int width;
+    int height;
+
+    width = game->mapdata.width;
+    height = game->mapdata.height;
+    x = -1;
+    while (++x < width)
+    {
+        if (flood_fill(game->map, (t_vec2Di){x, 0}, width, height))
+            return (-1);
+        if (flood_fill(game->map, (t_vec2Di){x, height - 1}, width, height))
+            return (-1);
+    }
+    y = 0;
+    while (++y < height - 1)
+    {
+        if (flood_fill(game->map, (t_vec2Di){0, y}, width, height))
+            return (-1);
+        if (flood_fill(game->map, (t_vec2Di){width - 1, y}, width, height))
+            return (-1);
+    }
+    return (0);
+}
+
+int flood_fill(char **map, t_vec2Di pos, int width, int height)
+{
+    if (pos.x < 0 || pos.y < 0 || pos.x >= width || pos.y >= height)
+        return (0);
+    if (str_contain("0NSWE", map[pos.y][pos.x]))
+        return (-1);
+    if (str_contain("1X", map[pos.y][pos.x]))
+        return (0);
+    map[pos.y][pos.x] = 'X';
+    if (flood_fill(map, (t_vec2Di){pos.x - 1, pos.y}, width, height == -1) ||
+        flood_fill(map, (t_vec2Di){pos.x + 1, pos.y}, width, height == -1) ||
+        flood_fill(map, (t_vec2Di){pos.x, pos.y - 1}, width, height == -1) ||
+        flood_fill(map, (t_vec2Di){pos.x, pos.y + 1}, width, height == -1))
+        return (-1);
+    return (0);
+}
+
 
 // ====================================== PARSE TEXTURES AND COLORS LINES
 

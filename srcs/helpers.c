@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 16:21:41 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/21 14:43:30 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/22 18:53:51 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@ void    print_strarr(char **arr)
     if (!arr)
         return ;
     while (*arr)
-        ft_putstr_fd(*arr++, STDOUT_FILENO);
-    ft_putchar_fd('\n', STDOUT_FILENO);
+        ft_putendl_fd(*arr++, STDOUT_FILENO);
+    // ft_putchar_fd('\n', STDOUT_FILENO);
 }
 
 void    print_textures(t_texture textures)

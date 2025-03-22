@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 08:16:11 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/22 13:26:25 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/22 19:47:33 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,15 +192,19 @@ int    store_file_data(t_game *game, char *filepath);
 int get_line_count(char *filepath);
 int fill_filecontent(t_game *game);
 
-int parse_filecontent(t_game *game);
-int build_map(t_game *game, char **content, int i);
+int     parse_filecontent(t_game *game);
+int     build_map(t_game *game, char **content, int i);
 int     skip_empty_lines(char **content, int *i);
 bool    is_empty_line(char *line);
 int     check_validity(t_game *game, char **map);
-int check_edge_line(t_game *game, char *line);
-int check_other_line(t_game *game, char *line, char *prev, char *next);
+int     check_edge_line(t_game *game, char *line);
+int     check_other_line(t_game *game, char **map, int i);
 bool    str_contain(char *str, char c);
-bool     check_nswe(char *line, int j, char *prev, char *next);
+bool    check_nswe(t_game *game, char **map, int i, int j);
+int     fill_game_map(t_game *game, char **map);
+bool    valid_nswe_side(t_game *game);
+int check_flood_fill(t_game *game);
+int flood_fill(char **map, t_vec2Di pos, int width, int height);
 
 bool    tex_and_colors_filled(t_game *game);
 int parse_line_tex(t_game *game, char *line);
