@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 08:16:09 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/22 19:52:04 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/23 15:28:41 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int main(int ac, char **av)
     parse_args(&game, av);
     print_textures(game.textures);
     printf("\n");
-    printf("%s\n", game.map[1]);
-    // print_strarr(game.map);
+    print_strarr(game.map);
+    show_player_stats(game.player);
     return (0);
 }

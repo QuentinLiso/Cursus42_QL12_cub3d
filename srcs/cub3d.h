@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 08:16:11 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/22 19:47:33 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/23 15:45:07 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@
 # define WIDTH 640
 # define HEIGHT 480
 # define BLOCK 64
+# define FOV 0.66
+# define MOVESPEED 0.0125
 
 typedef uint32_t    uint;
 
@@ -160,6 +162,7 @@ typedef struct s_game
 // Helpers
 void    print_strarr(char **arr);
 void    print_textures(t_texture textures);
+void    show_player_stats(t_player player);
 
 
 // Functions
@@ -193,18 +196,6 @@ int get_line_count(char *filepath);
 int fill_filecontent(t_game *game);
 
 int     parse_filecontent(t_game *game);
-int     build_map(t_game *game, char **content, int i);
-int     skip_empty_lines(char **content, int *i);
-bool    is_empty_line(char *line);
-int     check_validity(t_game *game, char **map);
-int     check_edge_line(t_game *game, char *line);
-int     check_other_line(t_game *game, char **map, int i);
-bool    str_contain(char *str, char c);
-bool    check_nswe(t_game *game, char **map, int i, int j);
-int     fill_game_map(t_game *game, char **map);
-bool    valid_nswe_side(t_game *game);
-int check_flood_fill(t_game *game);
-int flood_fill(char **map, t_vec2Di pos, int width, int height);
 
 bool    tex_and_colors_filled(t_game *game);
 int parse_line_tex(t_game *game, char *line);
@@ -217,6 +208,25 @@ int get_r(char *line, uint *rgb, int *i);
 int get_g(char *line, uint *rgb, int *i);
 int get_b(char *line, uint *rgb, int *i);
 
+int     build_map(t_game *game, char **content, int i);
+int     skip_empty_lines(char **content, int *i);
+bool    is_empty_line(char *line);
+int     check_validity(t_game *game, char **map);
+int     check_edge_line(t_game *game, char *line);
+int     check_other_line(t_game *game, char **map, int i);
+bool    str_contain(char *str, char c);
+bool    check_nswe(t_game *game, char **map, int i, int j);
+int     fill_game_map(t_game *game, char **map);
+bool    valid_nswe_side(t_game *game);
+int check_flood_fill(t_game *game);
+int flood_fill(char **map, t_vec2Di pos, int width, int height);
+void    fill_one(t_game *game);
+
+void    set_player_start_pos(t_game *game);
+void    init_player_north(t_player *player);
+void    init_player_south(t_player *player);
+void    init_player_west(t_player *player);
+void    init_player_east(t_player *player);
 
 
 #endif

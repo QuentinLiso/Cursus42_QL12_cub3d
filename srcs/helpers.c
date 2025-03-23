@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 16:21:41 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/22 18:53:51 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/23 15:26:41 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,4 +35,12 @@ void    print_textures(t_texture textures)
         textures.hex_floor >> 16 & 0xff,
         textures.hex_floor >> 8 & 0xff,
         textures.hex_floor & 0xff);
+}
+
+void    show_player_stats(t_player player)
+{
+    printf("Orientation : %c\n", player.orientation);
+    printf("Pos : %f %f\n", player.pos.x, player.pos.y);
+    printf("Dir : %f %f\n", player.dir.x, player.dir.y);
+    printf("Plane : %f %f\n", player.plane.x, player.plane.y);
 }
