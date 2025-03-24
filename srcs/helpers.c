@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 16:21:41 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/23 15:26:41 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/24 10:30:36 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,10 @@ void    print_textures(t_texture textures)
 
 void    show_player_stats(t_player player)
 {
+    printf("****************************\n");
     printf("Orientation : %c\n", player.orientation);
     printf("Pos : %f %f\n", player.pos.x, player.pos.y);
     printf("Dir : %f %f\n", player.dir.x, player.dir.y);
     printf("Plane : %f %f\n", player.plane.x, player.plane.y);
+    printf("****************************\n");
 }

@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 08:16:11 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/23 15:45:07 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/24 11:49:09 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@
 # define BLOCK 64
 # define FOV 0.66
 # define MOVESPEED 0.0125
+# define ROTSPEED 0.05
 
 typedef uint32_t    uint;
 
@@ -171,6 +172,7 @@ void    skip_blank(char *line, int *i);
 
 int perror_c3d(char *msg, int errnum);
 
+int quit_c3d(t_game *game);
 void    clean_c3d_exit(t_game *game, int errnum);
 void    free_game(t_game *game);
 void    free_game_mlx(t_game *game);
@@ -227,6 +229,17 @@ void    init_player_north(t_player *player);
 void    init_player_south(t_player *player);
 void    init_player_west(t_player *player);
 void    init_player_east(t_player *player);
+
+int set_player_movement(t_game *game);
+int move_player(t_game *game, t_vec2D move);
+int check_valid_move(t_game *game, t_vec2D new_pos);
+bool    collide_boundaries(t_game *game, t_vec2D pos);
+bool    collide_walls(t_game *game, t_vec2D pos);
+int set_player_rotation(t_game *game);
+void    rotate_vec2D(t_vec2D *v, double angle);
+void    handle_input(t_game *game);
+int handle_key_press(int key, t_game *game);
+int handle_key_release(int key, t_game *game);
 
 
 #endif
