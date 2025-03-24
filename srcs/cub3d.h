@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 08:16:11 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/24 11:49:09 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/24 14:51:57 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,9 @@ typedef struct s_texture
     bool            ceilbool;
     uint            hex_floor;
     uint            hex_ceil;
-    int             size;
+    // int             size;
+    int             width;
+    int             height;
     int             index;
     double          step;
     double          pos;
@@ -241,5 +243,10 @@ void    handle_input(t_game *game);
 int handle_key_press(int key, t_game *game);
 int handle_key_release(int key, t_game *game);
 
+void    init_mlx(t_game *game);
+void    init_tex_array(t_game *game);
+void    init_img(t_game *game, t_img *img, int width, int height);
+void    init_tex_img(t_game *game, t_img *img, char *path);
+int *xpm_to_img(t_game *game, char *path);
 
 #endif

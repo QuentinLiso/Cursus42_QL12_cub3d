@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 08:16:09 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/24 10:40:43 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/24 14:35:22 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,5 +25,7 @@ int main(int ac, char **av)
     printf("\n");
     print_strarr(game.map);
     show_player_stats(game.player);
+    init_mlx(&game);
+    init_tex_array(&game);
     return (0);
 }

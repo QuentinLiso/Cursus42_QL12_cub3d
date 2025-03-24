@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 08:16:07 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/24 11:49:44 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/24 16:33:50 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ void    free_str(char **str)
     *str = NULL;
 }
 
-// ===========================================
+// ===========================================  INIT GAME before PARSING
 
 void    init_game(t_game *game)
 {
@@ -160,7 +160,8 @@ void    init_textures(t_texture *textures)
     textures->hex_ceil = 0;
     textures->floorbool = false;
     textures->ceilbool = false;
-    textures->size = BLOCK;
+    textures->width = 0;
+    textures->height = 0;
     textures->step = 0.0;
     textures->pos = 0.0;
     textures->coord = (t_vec2Di){0, 0};
@@ -1023,3 +1024,281 @@ int handle_key_release(int key, t_game *game)
         player->move.x -= 1;
     return (0);
 }
+
+// ======================================== INIT MLX AND TEXTURES
+
+void    init_mlx(t_game *game)
+{
+    game->mlx = mlx_init();
+    if (!game->mlx)
+        clean_c3d_exit(game, perror_c3d("MLX INIT FAILED", 1));
+    game->win = mlx_new_window(game->mlx, WIDTH, HEIGHT, "cub3d");
+    if (!game->win)
+        clean_c3d_exit(game, perror_c3d("MLX WIN FAILED", 1));
+}
+
+void    init_tex_array(t_game *game)
+{
+    game->tex_array = ft_calloc(4, sizeof(int *));
+    if (!game->tex_array)
+        clean_c3d_exit(game, perror_c3d("TEX ARR MALLOC FAILED", 1));
+    game->tex_array[NORTH] = xpm_to_img(game, game->textures.north);
+    game->tex_array[SOUTH] = xpm_to_img(game, game->textures.south);
+    game->tex_array[WEST] = xpm_to_img(game, game->textures.west);
+    game->tex_array[EAST] = xpm_to_img(game, game->textures.east);
+}
+
+void    init_img(t_game *game, t_img *img, int width, int height)
+{
+    init_empty_img(img);
+    // mlx_new_image :
+    // Creates a new empty image of size width * height
+    img->img = mlx_new_image(game->mlx, width, height); 
+    if (!img->img)
+        clean_c3d_exit(game, perror_c3d("MLX NEW IMG FAILED", 1));
+    img->addr = (int *)mlx_get_data_addr(img->img, &img->bpp,
+            &img->size_line, &img->endian);
+}
+
+void    init_tex_img(t_game *game, t_img *img, char *path)
+{
+    init_empty_img(img);
+    // mlx_xpm_file_to_image :
+    // Loads the texture from path and creates an image of its actual size 
+    // Additionally stores the width and height of the image inside &game->textures.size
+    // So it only works with squared textures
+    img->img = mlx_xpm_file_to_image(game->mlx, path,
+        &game->textures.width, &game->textures.height);    
+    if (!img->img)
+        clean_c3d_exit(game, perror_c3d("MLX XPM TO IMG FAILED", 1));
+    img->addr = (int *)mlx_get_data_addr(img->img, &img->bpp,
+                &img->size_line, &img->endian);
+    }
+
+int *xpm_to_img(t_game *game, char *path)
+{
+    t_img   img;
+    int     *buf;
+    t_vec2Di    pixel;
+
+    init_tex_img(game, &img, path);
+    buf = ft_calloc(1,
+        sizeof(int) * BLOCK * BLOCK);
+    if (!buf)
+        clean_c3d_exit(game, perror_c3d("MALLOC XPM TO IMG FAILED", 1));
+    pixel.y = -1;
+    while (++pixel.y < BLOCK && pixel.y < game->textures.height)
+    {
+        pixel.x = -1;
+        while (++pixel.x < BLOCK && pixel.x < game->textures.width)
+        {
+            buf[pixel.y * BLOCK + pixel.x]
+                = img.addr[pixel.y * game->textures.width + pixel.x];
+        }
+    }
+    mlx_destroy_image(game->mlx, img.img);
+    return (buf);
+}
+
+
+// ========================================== PUT PIXEL TO IMG
+void    put_pixel_to_img(t_img *img, t_vec2Di coord, int color)
+{
+    int pixel;
+    int pixels_per_row;
+
+    pixels_per_row = img->size_line / sizeof(int);
+    pixel = coord.y * pixels_per_row + coord.x;
+    img->addr[pixel] = color;
+}
+
+// ========================================== RENDERING
+
+int     update_render(t_game *game)
+{
+    game->player.has_moved += set_player_movement(game);
+    if (!game->player.has_moved)
+        return (0);
+    update_render_frame(game);
+    return (0);
+}
+
+void    update_render_frame(t_game *game)
+{
+    init_tex_pixels(game);
+    init_raycast(&game->ray);
+    // raycasting : to implement
+    put_frame_to_screen(game);
+}
+
+
+void    raycast_algo(t_game *game)
+{
+    t_raycast   *ray;
+    t_player    *player;
+    int         x;
+
+    ray = &game->ray;
+    player = &game->player;
+    x = -1;
+    while (++x < game->win_width)
+    {
+        init_player_raycast(ray, player, x);
+        init_dda_raycast(ray, player);
+    }
+}
+
+void    init_player_raycast(t_raycast *ray, t_player *player, int x)
+{
+    init_raycast(ray);
+    ray->camera_x = 2 * x / (double)WIDTH - 1;
+    ray->dir.x = player->dir.x + player->plane.x * ray->camera_x;
+    ray->dir.y = player->dir.y + player->plane.y * ray->camera_x;
+    ray->map.x = (int)player->pos.x;
+    ray->map.y = (int)player->pos.y;
+    if (ray->dir.x == 0)
+        ray->deltadist.x = INFINITY;
+    else
+        ray->deltadist.x = (fabs(1 / ray->dir.x));
+    if (ray->dir.y == 0)
+        ray->deltadist.y = INFINITY;
+    else
+        ray->deltadist.y = (fabs(1 / ray->dir.y));
+}
+
+void    init_dda_raycast(t_raycast *ray, t_player *player)
+{
+    if (ray->dir.x < 0)
+    {
+        ray->step.x = -1;
+        ray->sidedist.x = (player->pos.x - ray->map.x) * ray->deltadist.x;
+    }
+    else
+    {
+        ray->step.x = 1;
+        ray->sidedist.x =
+            (ray->map.x + 1.0 - player->pos.x) * ray->deltadist.x;
+    }
+    if (ray->dir.y < 0)
+    {
+        ray->step.y = -1;
+        ray->sidedist.y = (player->pos.y - ray->map.y) * ray->deltadist.y;
+    }
+    else
+    {
+        ray->step.y = 1;
+        ray->sidedist.y =
+            (ray->map.y + 1.0 - player->pos.y) * ray->deltadist.y;
+    }
+}
+
+void    launch_dda_raycast(t_raycast *ray, t_game *game)
+{
+    while (1)
+    {
+        if (ray->sidedist.x < ray->sidedist.y)
+        {
+            ray->sidedist.x += ray->deltadist.x;
+            ray->map.x += ray->step.x;
+            ray->side = 0;
+        }
+        else
+        {
+            ray->sidedist.y += ray->deltadist.y;
+            ray->map.y += ray->step.y;
+            ray->side = 1;
+        }
+        if (collide_boundaries_i(game, ray->map))
+            break;
+        else if (collide_walls_i(game, ray->map))
+            break;
+    }
+}
+
+bool    collide_boundaries_i(t_game *game, t_vec2Di pos)
+{
+    return (pos.x < 1 || pos.x >= game->mapdata.width ||
+        pos.y < 1 || pos.y >= game->mapdata.height);
+}
+
+bool    collide_walls_i(t_game *game, t_vec2Di pos)
+{
+    return (game->map[pos.y][pos.x] > '0');
+}
+
+// ========================================= RENDERING : INIT + UPDATE FRAME
+
+void    init_tex_pixels(t_game *game)
+{
+    int i;
+
+    if (game->tex_pixels)
+        free_arr((void **)game->tex_pixels);
+    game->tex_pixels = ft_calloc(game->win_height, sizeof(int *));
+    if (!game->tex_pixels)
+        clean_c3d_exit(game, perror_c3d("TEX PIXELS MALLOC FAILED", 1));
+    i = -1;
+    while (++i < game->win_height)
+    {
+        game->tex_pixels[i] = ft_calloc(game->win_width, sizeof(int));
+        if (!game->tex_pixels[i])
+            clean_c3d_exit(game, perror_c3d("TEX PIX MALLOC FAILED", 1));
+    }
+}
+
+void    init_raycast(t_raycast *ray)
+{
+    ray->camera_x = 0.0;
+    ray->dir = (t_vec2D){0.0, 0.0};
+    ray->map = (t_vec2Di){0, 0};
+    ray->step = (t_vec2Di){0, 0};
+    ray->sidedist = (t_vec2D){0.0, 0.0};
+    ray->deltadist = (t_vec2D){0.0, 0.0};
+    ray->wall_dist = 0.0;
+    ray->wall_x = 0.0;
+    ray->side = 0;
+    ray->line_height = 0;
+    ray->draw_start = 0;
+    ray->draw_end = 0;
+}
+
+void    put_frame_to_screen(t_game *game)
+{
+    t_img   img;
+    t_vec2Di coord;
+
+    init_img(game, &img, game->win_width, game->win_height);
+    coord.y = -1;
+    while (++coord.y < game->win_height)
+    {
+        coord.x = -1;
+        while (++coord.x < game->win_width)
+            update_frame_pixel(game, &img, coord);
+    }
+    mlx_put_image_to_window(game->mlx, game->win, img.img, 0, 0);
+    mlx_destroy_image(game->mlx, img.img);
+}
+
+void    update_frame_pixel(t_game *game, t_img *img, t_vec2Di coord)
+{
+    if (game->tex_pixels[coord.y][coord.x] > 0)
+        put_pixel_to_img(img, coord, game->tex_pixels[coord.y][coord.x]);
+    else if (coord.y < game->win_height / 2)
+        put_pixel_to_img(img, coord, game->textures.hex_ceil);
+    else
+        put_pixel_to_img(img, coord, game->textures.hex_floor);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,7 +1,7 @@
-NO ./file1.xpm
-SO ./file2.xpm
-WE ./file3.xpm
-EA ./file4.xpm
+NO ./64x/xpm/Bark.xpm
+SO ./64x/xpm/bookshelf.xpm
+WE ./64x/xpm/Bricks.xpm
+EA ./64x/xpm/LavaF1.xpm
 
 F 220,100,0
 C 225,30,0
