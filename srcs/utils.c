@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 08:16:07 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/25 12:21:58 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/25 21:35:43 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void     free_game(t_game *game)
         return ;
     free_game_mlx(game);
     free_game_textures(game);
+    free_game_pixels(game);
     free_game_map(game);
 }
 
@@ -83,10 +84,26 @@ void    free_game_textures(t_game *game)
         free(game->textures.floor);
     if (game->textures.ceil)
         free(game->textures.ceil);
+}
+
+void    free_game_pixels(t_game *game)
+{
+    int i;
+    
     if (game->tex_pixels)
-        free_arr((void **)game->tex_pixels);
+    {
+        i = -1;
+        while (++i < game->win_height)
+            free(game->tex_pixels[i]);
+        free(game->tex_pixels);
+    }
     if (game->tex_array)
-        free_arr((void **)game->tex_array);
+    {
+        i = -1;
+        while (++i < 4)
+            free(game->tex_array[i]);
+        free(game->tex_array);
+    }
 }
 
 void    free_game_map(t_game *game)
@@ -146,6 +163,7 @@ void    init_player(t_player *player)
     player->has_moved = 0;
     player->move = (t_vec2Di){0, 0};
     player->rotate = 0;
+    player->mouse_rotate = 0;
 }
 
 void    init_textures(t_texture *textures)
@@ -1028,10 +1046,22 @@ int handle_key_release(int key, t_game *game)
 
 int handle_mouse(int x, int y, t_game *game)
 {
-    static int center = WIDTH / 2;
-    (void)game;
-    (void)center;
-    printf("coucou %d %d\n", x, y);
+    t_player    *player;
+    int delta_x;
+    double angle;
+
+    (void)y;
+    player = &game->player;
+    delta_x = x - WIDTH / 2;
+    if (delta_x != 0)
+    {
+        angle = delta_x * MOUSE_SENS;
+        rotate_vec2D(&player->dir, angle);
+        rotate_vec2D(&player->plane, angle);
+        player->mouse_rotate = 1;
+    }
+    if (x != WIDTH / 2)
+        mlx_mouse_move(game->mlx, game->win, WIDTH / 2, HEIGHT / 2);
     return (0);
 }
 
@@ -1045,6 +1075,9 @@ void    init_mlx(t_game *game)
     game->win = mlx_new_window(game->mlx, WIDTH, HEIGHT, "cub3d");
     if (!game->win)
         clean_c3d_exit(game, perror_c3d("MLX WIN FAILED", 1));
+    mlx_mouse_hide(game->mlx, game->win);
+    mlx_mouse_move(game->mlx, game->win, WIDTH / 2, HEIGHT / 2);
+
 }
 
 void    init_tex_array(t_game *game)
@@ -1128,9 +1161,10 @@ int     update_render(t_game *game)
 {
     game->player.has_moved += set_player_movement(game);
     game->player.has_moved += set_player_rotation(game);
-    if (!game->player.has_moved)
+    if (!game->player.has_moved && !game->player.mouse_rotate)
         return (0);
     update_render_frame(game);
+    game->player.mouse_rotate = 0;
     return (0);
 }
 
@@ -1149,7 +1183,12 @@ void    init_tex_pixels(t_game *game)
     int i;
 
     if (game->tex_pixels)
-        free_arr((void **)game->tex_pixels);
+    {
+        i = -1;
+        while (++i < game->win_height)
+            free(game->tex_pixels[i]);
+        free(game->tex_pixels);
+    }
     game->tex_pixels = ft_calloc(game->win_height, sizeof(int *));
     if (!game->tex_pixels)
         clean_c3d_exit(game, perror_c3d("TEX PIXELS MALLOC FAILED", 1));

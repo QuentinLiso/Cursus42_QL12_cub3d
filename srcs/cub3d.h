@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 08:16:11 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/25 12:21:13 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/25 21:37:08 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,13 @@
 # include <errno.h>
 
 // Define
-# define WIDTH 640
-# define HEIGHT 480
+# define WIDTH 1024
+# define HEIGHT 720
 # define BLOCK 64
 # define FOV 0.66
-# define MOVESPEED 0.04
+# define MOVESPEED 0.1
 # define ROTSPEED 0.05
+# define MOUSE_SENS 0.0001
 
 typedef uint32_t    uint;
 
@@ -74,6 +75,7 @@ typedef struct s_player
     int         has_moved;
     t_vec2Di    move;
     int         rotate;
+    int         mouse_rotate;
 }   t_player;
 
 typedef struct s_raycast
@@ -179,6 +181,7 @@ void    clean_c3d_exit(t_game *game, int errnum);
 void    free_game(t_game *game);
 void    free_game_mlx(t_game *game);
 void    free_game_textures(t_game *game);
+void    free_game_pixels(t_game *game);
 void    free_game_map(t_game *game);
 void    free_arr(void **arr);
 void    free_str(char **str);
