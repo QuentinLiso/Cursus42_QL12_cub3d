@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 08:16:11 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/24 14:51:57 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/25 12:21:13 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@
 # define HEIGHT 480
 # define BLOCK 64
 # define FOV 0.66
-# define MOVESPEED 0.0125
+# define MOVESPEED 0.04
 # define ROTSPEED 0.05
 
 typedef uint32_t    uint;
@@ -242,11 +242,30 @@ void    rotate_vec2D(t_vec2D *v, double angle);
 void    handle_input(t_game *game);
 int handle_key_press(int key, t_game *game);
 int handle_key_release(int key, t_game *game);
+int handle_mouse(int x, int y, t_game *game);
 
 void    init_mlx(t_game *game);
 void    init_tex_array(t_game *game);
 void    init_img(t_game *game, t_img *img, int width, int height);
 void    init_tex_img(t_game *game, t_img *img, char *path);
 int *xpm_to_img(t_game *game, char *path);
+void    put_pixel_to_img(t_img *img, t_vec2Di coord, int color);
+
+int     update_render(t_game *game);
+void    update_render_frame(t_game *game);
+void    init_tex_pixels(t_game *game);
+void    init_raycast(t_raycast *ray);
+void    raycast_algo(t_game *game);
+void    init_player_raycast(t_raycast *ray, t_player *player, int x);
+void    init_dda_raycast(t_raycast *ray, t_player *player);
+void    launch_dda_raycast(t_raycast *ray, t_game *game);
+bool    collide_boundaries_i(t_game *game, t_vec2Di pos);
+bool    collide_walls_i(t_game *game, t_vec2Di pos);
+void    set_line_height(t_raycast *ray, t_player *player, t_game *game);
+void    set_game_tex_pixels(t_game *game, t_raycast *ray, int x);
+t_orient    get_texture_orientation(t_raycast *ray);
+void    put_frame_to_screen(t_game *game);
+void    update_frame_pixel(t_game *game, t_img *img, t_vec2Di coord);
+
 
 #endif

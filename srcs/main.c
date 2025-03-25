@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 08:16:09 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/24 14:35:22 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/25 11:39:54 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,5 +27,10 @@ int main(int ac, char **av)
     show_player_stats(game.player);
     init_mlx(&game);
     init_tex_array(&game);
+    printf("coucou\n");
+    update_render_frame(&game);
+    handle_input(&game);
+    mlx_loop_hook(game.mlx, update_render, &game);
+    mlx_loop(game.mlx);
     return (0);
 }

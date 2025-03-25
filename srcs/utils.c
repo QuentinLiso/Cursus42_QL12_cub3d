@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 08:16:07 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/24 16:33:50 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/25 12:21:58 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -979,6 +979,7 @@ void    handle_input(t_game *game)
     mlx_hook(game->win, ClientMessage, NoEventMask, quit_c3d, game);
     mlx_hook(game->win, KeyPress, KeyPressMask, handle_key_press, game);
     mlx_hook(game->win, KeyRelease, KeyReleaseMask, handle_key_release, game);
+    mlx_hook(game->win, MotionNotify, PointerMotionMask, handle_mouse, game);
 }
 
 int handle_key_press(int key, t_game *game)
@@ -1022,6 +1023,15 @@ int handle_key_release(int key, t_game *game)
         player->move.x += 1;
     if (key == XK_d && player->move.x == 1)
         player->move.x -= 1;
+    return (0);
+}
+
+int handle_mouse(int x, int y, t_game *game)
+{
+    static int center = WIDTH / 2;
+    (void)game;
+    (void)center;
+    printf("coucou %d %d\n", x, y);
     return (0);
 }
 
@@ -1117,6 +1127,7 @@ void    put_pixel_to_img(t_img *img, t_vec2Di coord, int color)
 int     update_render(t_game *game)
 {
     game->player.has_moved += set_player_movement(game);
+    game->player.has_moved += set_player_rotation(game);
     if (!game->player.has_moved)
         return (0);
     update_render_frame(game);
@@ -1127,10 +1138,47 @@ void    update_render_frame(t_game *game)
 {
     init_tex_pixels(game);
     init_raycast(&game->ray);
-    // raycasting : to implement
+    raycast_algo(game);
     put_frame_to_screen(game);
 }
 
+// ========================================= RENDERING : INIT
+
+void    init_tex_pixels(t_game *game)
+{
+    int i;
+
+    if (game->tex_pixels)
+        free_arr((void **)game->tex_pixels);
+    game->tex_pixels = ft_calloc(game->win_height, sizeof(int *));
+    if (!game->tex_pixels)
+        clean_c3d_exit(game, perror_c3d("TEX PIXELS MALLOC FAILED", 1));
+    i = -1;
+    while (++i < game->win_height)
+    {
+        game->tex_pixels[i] = ft_calloc(game->win_width, sizeof(int));
+        if (!game->tex_pixels[i])
+            clean_c3d_exit(game, perror_c3d("TEX PIX MALLOC FAILED", 1));
+    }
+}
+
+void    init_raycast(t_raycast *ray)
+{
+    ray->camera_x = 0.0;
+    ray->dir = (t_vec2D){0.0, 0.0};
+    ray->map = (t_vec2Di){0, 0};
+    ray->step = (t_vec2Di){0, 0};
+    ray->sidedist = (t_vec2D){0.0, 0.0};
+    ray->deltadist = (t_vec2D){0.0, 0.0};
+    ray->wall_dist = 0.0;
+    ray->wall_x = 0.0;
+    ray->side = 0;
+    ray->line_height = 0;
+    ray->draw_start = 0;
+    ray->draw_end = 0;
+}
+
+// ========================================= RENDERING : RAYCAST
 
 void    raycast_algo(t_game *game)
 {
@@ -1145,6 +1193,9 @@ void    raycast_algo(t_game *game)
     {
         init_player_raycast(ray, player, x);
         init_dda_raycast(ray, player);
+        launch_dda_raycast(ray, game);
+        set_line_height(ray, player, game);
+        set_game_tex_pixels(game, ray, x);
     }
 }
 
@@ -1226,41 +1277,76 @@ bool    collide_walls_i(t_game *game, t_vec2Di pos)
     return (game->map[pos.y][pos.x] > '0');
 }
 
-// ========================================= RENDERING : INIT + UPDATE FRAME
-
-void    init_tex_pixels(t_game *game)
+void    set_line_height(t_raycast *ray, t_player *player, t_game *game)
 {
-    int i;
-
-    if (game->tex_pixels)
-        free_arr((void **)game->tex_pixels);
-    game->tex_pixels = ft_calloc(game->win_height, sizeof(int *));
-    if (!game->tex_pixels)
-        clean_c3d_exit(game, perror_c3d("TEX PIXELS MALLOC FAILED", 1));
-    i = -1;
-    while (++i < game->win_height)
+    if (ray->side == 0)
     {
-        game->tex_pixels[i] = ft_calloc(game->win_width, sizeof(int));
-        if (!game->tex_pixels[i])
-            clean_c3d_exit(game, perror_c3d("TEX PIX MALLOC FAILED", 1));
+        ray->wall_dist = (ray->sidedist.x - ray->deltadist.x);
+        ray->wall_x = player->pos.y + ray->wall_dist * ray->dir.y;
+    }
+    else
+    {
+        ray->wall_dist = (ray->sidedist.y - ray->deltadist.y);
+        ray->wall_x = player->pos.x + ray->wall_dist * ray->dir.x;
+    }
+    ray->wall_x -= floor(ray->wall_x);
+    ray->line_height = (int)(game->win_height / ray->wall_dist);
+    ray->draw_start = (game->win_height / 2) - (ray->line_height / 2);
+    ray->draw_end = (game->win_height / 2) + (ray->line_height / 2);
+    if (ray->draw_start < 0)
+        ray->draw_start = 0;
+    if (ray->draw_end >= game->win_height)
+        ray->draw_end = game->win_height - 1;
+}
+
+void    set_game_tex_pixels(t_game *game, t_raycast *ray, int x)
+{
+    t_texture   *tex;
+    int         y;
+    int         color;
+
+    tex = &game->textures;
+    tex->index = get_texture_orientation(ray);
+    tex->step = 1.0 * BLOCK / ray->line_height;
+    tex->pos = (ray->draw_start - game->win_height / 2
+        + ray->line_height / 2) * tex->step;
+    tex->coord.x = (int)(ray->wall_x * BLOCK);
+    if ((ray->side == 0 && ray->dir.x < 0) ||
+        (ray->side == 1 && ray->dir.y > 0))
+        tex->coord.x = BLOCK - 1 - tex->coord.x;
+    y = ray->draw_start - 1;
+    while (++y < ray->draw_end)
+    {
+        tex->coord.y = (int)tex->pos & (BLOCK - 1);
+        tex->pos += tex->step;
+        color = 
+            game->tex_array[tex->index][BLOCK * tex->coord.y + tex->coord.x];
+        if (tex->index == NORTH || tex->index == EAST)
+            color = (color >> 1) & 8355711;
+        if (color > 0)
+            game->tex_pixels[y][x] = color;
     }
 }
 
-void    init_raycast(t_raycast *ray)
+t_orient    get_texture_orientation(t_raycast *ray)
 {
-    ray->camera_x = 0.0;
-    ray->dir = (t_vec2D){0.0, 0.0};
-    ray->map = (t_vec2Di){0, 0};
-    ray->step = (t_vec2Di){0, 0};
-    ray->sidedist = (t_vec2D){0.0, 0.0};
-    ray->deltadist = (t_vec2D){0.0, 0.0};
-    ray->wall_dist = 0.0;
-    ray->wall_x = 0.0;
-    ray->side = 0;
-    ray->line_height = 0;
-    ray->draw_start = 0;
-    ray->draw_end = 0;
+    if (ray->side == 0)
+    {
+        if (ray->dir.x > 0)
+            return (EAST);
+        else
+            return (WEST);
+    }
+    else
+    {
+        if (ray->dir.y > 0)
+            return (NORTH);
+        else
+            return (SOUTH);
+    }
 }
+
+// ========================================= RENDERING : UPDATE FRAME
 
 void    put_frame_to_screen(t_game *game)
 {
@@ -1288,7 +1374,6 @@ void    update_frame_pixel(t_game *game, t_img *img, t_vec2Di coord)
     else
         put_pixel_to_img(img, coord, game->textures.hex_floor);
 }
-
 
 
 
