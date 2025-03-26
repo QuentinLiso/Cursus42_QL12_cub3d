@@ -6,14 +6,21 @@
 #    By: qliso <qliso@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/15 10:15:28 by qliso             #+#    #+#              #
-#    Updated: 2025/03/21 14:33:36 by qliso            ###   ########.fr        #
+#    Updated: 2025/03/26 17:29:40 by qliso            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRCS=$(addprefix ./srcs/, \
 		$(addsuffix .c, \
-			main \
-			utils \
+			00_main \
+			01_freeing \
+			02_utils \
+			03_err \
+			10_init \
+			20_parsing \
+			30_player \
+			40_textures \
+			50_rendering \
 			helpers \
 		)\
 	)

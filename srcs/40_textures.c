@@ -1,0 +1,75 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   40_textures.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/26 14:53:33 by qliso             #+#    #+#             */
+/*   Updated: 2025/03/26 17:43:07 by qliso            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "cub3d.h"
+
+void    init_mlx(t_game *game)
+{
+    game->mlx = mlx_init();
+    if (!game->mlx)
+        clean_c3d_exit(game, perror_c3d(EMLXINIT));
+    game->win = mlx_new_window(game->mlx, WIDTH, HEIGHT, "cub3d");
+    if (!game->win)
+        clean_c3d_exit(game, perror_c3d(EMLXWIN));
+    mlx_mouse_hide(game->mlx, game->win);
+    mlx_mouse_move(game->mlx, game->win, WIDTH / 2, HEIGHT / 2);
+}
+
+void    init_texs(t_game *game)
+{
+    load_tex(game, NORTH);
+    load_tex(game, SOUTH);
+    load_tex(game, WEST);
+    load_tex(game, EAST);
+}
+
+void    load_tex(t_game *game, t_orient orient)
+{
+    t_tex   *tex;
+    t_img   *img;
+
+    tex = &game->texs[orient];
+    img = &tex->img;
+    init_empty_img(img);
+    img->img = mlx_xpm_file_to_image(game->mlx, tex->path,
+        &tex->width, &tex->height);
+    if (!img->img)
+        clean_c3d_exit(game, perror_c3d(ELOADTEXTURE));
+    img->addr = (int *)mlx_get_data_addr(img->img, &img->bpp,
+        &img->size_line, &img->endian);
+    if (!img->addr)
+        clean_c3d_exit(game, perror_c3d(EGETIMGADDR));
+    fill_tex_pixels(img, tex);
+    mlx_destroy_image(game->mlx, img->img);
+}
+
+void    fill_tex_pixels(t_img *img, t_tex *tex)
+{
+    t_vec2Di    img_pixel;
+    t_vec2Di    tex_pixel;
+    t_vec2Di     scale;
+    
+    scale.x = (tex->width << 16) / BLOCK;
+    scale.y = (tex->height << 16) / BLOCK;
+    tex_pixel.y = -1;
+    while (++tex_pixel.y < BLOCK)
+    {
+        tex_pixel.x = -1;
+        while (++tex_pixel.x < BLOCK)
+        {
+            img_pixel.x = (tex_pixel.x * scale.x) >> 16;
+            img_pixel.y = (tex_pixel.y * scale.y) >> 16;
+            tex->pixels[tex_pixel.y * BLOCK + tex_pixel.x] =
+                img->addr[img_pixel.y * tex->width + img_pixel.x];
+        }
+    }
+}

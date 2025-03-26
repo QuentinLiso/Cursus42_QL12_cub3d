@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 16:21:41 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/24 10:30:36 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/26 17:46:15 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,20 +21,30 @@ void    print_strarr(char **arr)
     // ft_putchar_fd('\n', STDOUT_FILENO);
 }
 
-void    print_textures(t_texture textures)
+void    print_tex(t_tex *texs)
 {
-    printf("North : %s\n", textures.north);
-    printf("South : %s\n", textures.south);
-    printf("West : %s\n", textures.west);
-    printf("East : %s\n", textures.east);
-    printf("Ceiling : %u, %u, %u\n",
-        textures.hex_ceil >> 16 & 0xff,
-        textures.hex_ceil >> 8 & 0xff,
-        textures.hex_ceil & 0xff);
+    printf("North : %s\n", texs[NORTH].path);
+    printf("South : %s\n", texs[SOUTH].path);
+    printf("West : %s\n", texs[WEST].path);
+    printf("East : %s\n", texs[EAST].path);
     printf("Floor : %u, %u, %u\n",
-        textures.hex_floor >> 16 & 0xff,
-        textures.hex_floor >> 8 & 0xff,
-        textures.hex_floor & 0xff);
+        texs[FLOOR].color >> 16 & 0xff,
+        texs[FLOOR].color >> 8 & 0xff,
+        texs[FLOOR].color & 0xff);
+    printf("Ceiling : %u, %u, %u\n",
+        texs[CEILING].color >> 16 & 0xff,
+        texs[CEILING].color >> 8 & 0xff,
+        texs[CEILING].color & 0xff);    
+}
+
+void    print_texbool(t_tex *texs)
+{
+    printf("North : %d\n", texs[NORTH].filled);
+    printf("South : %d\n", texs[SOUTH].filled);
+    printf("West : %d\n", texs[WEST].filled);
+    printf("East : %d\n", texs[EAST].filled);
+    printf("Floor : %d\n", texs[FLOOR].filled);
+    printf("Ceiling : %d\n", texs[CEILING].filled);
 }
 
 void    show_player_stats(t_player player)
