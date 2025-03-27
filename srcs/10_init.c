@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:50:23 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/27 15:16:16 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/27 17:29:25 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ void    init_game_tex(t_game *game)
     init_tex(&game->texs[EAST]);
     init_tex(&game->texs[FLOOR]);
     init_tex(&game->texs[CEILING]);
+    init_door_tex(&game->texs[DOOR]);
 }
 
 void    init_tex(t_tex  *tex)
@@ -60,6 +61,18 @@ void    init_tex(t_tex  *tex)
     tex->height = 0;
 }
 
+void    init_door_tex(t_tex *tex)
+{
+    tex->filled = true;
+    tex->path = "./64x/xpm/Glass.xpm";
+    tex->color = 0x0;
+    init_empty_img(&tex->img);
+    ft_bzero(&tex->pixels, BLOCK * BLOCK * sizeof(int));
+    tex->width = 0;
+    tex->height = 0;
+}
+
+
 void    init_mapdata(t_mapdata *mapdata)
 {
     mapdata->fd = 0;
@@ -68,7 +81,6 @@ void    init_mapdata(t_mapdata *mapdata)
     mapdata->filecontent = NULL;
     mapdata->height = 0;
     mapdata->width = 0;
-    mapdata->end_index = 0;
 }
 
 void    init_minimap(t_game *game, t_minimap *mmap)
@@ -85,4 +97,6 @@ void    init_empty_img(t_img *img)
     img->bpp = 0;
     img->size_line = 0;
     img->endian = 0;
+    img->width = 0;
+    img->height = 0;
 }

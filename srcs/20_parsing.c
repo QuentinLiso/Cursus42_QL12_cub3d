@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:50:54 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/26 18:59:48 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/27 17:25:21 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,6 +203,25 @@ int    tex_and_colors_empty(t_game *game)
     return (0);
 }
 
+void    missing_tex_msg(t_game *game)
+{
+    t_tex   *texs;
+
+    texs = game->texs;
+    if (!texs[NORTH].filled)
+        perror_c3d(EMISSINGTEXN);
+    if (!texs[SOUTH].filled)
+        perror_c3d(EMISSINGTEXS);
+    if (!texs[WEST].filled)
+        perror_c3d(EMISSINGTEXW);
+    if (!texs[EAST].filled)
+        perror_c3d(EMISSINGTEXE);
+    if (!texs[FLOOR].filled)
+        perror_c3d(EMISSINGCOLF);
+    if (!texs[CEILING].filled)
+        perror_c3d(EMISSINGCOLC);
+}
+
 int parse_line_tex(t_game *game, char *line)
 {
     int i;
@@ -213,10 +232,11 @@ int parse_line_tex(t_game *game, char *line)
     skip_blank(line, &i);
     if (!line[i])
         return (0);
-    if (ft_isprint(line[i]) && !ft_isdigit(line[i]))
-        status = get_texture_and_colors(game, line, i);
-    else
-        return (EWRONGCHAR);
+    if (!ft_isprint(line[i]))
+        return (perror_c3d(EWRONGCHAR));
+    status = get_texture_and_colors(game, line, i);
+    if (status)
+        missing_tex_msg(game);
     return (status);
 }
 
@@ -505,24 +525,34 @@ int check_other_line(t_game *game, char **map, int i)
     int status;
 
     j = 0;
-    if (map[i][0] == '0')
+    if (map[i][0] == '0' || map[i][0] == 'D')
         return (EVOIDONSIDE);
-    while (map[i][j] && map[i][j] != '\n')
-    {
-        if (str_contain("NSWE", map[i][j]))
-        {
-            status = valid_nswe(game, map, i, j);
-            if (status)
-                return (status);
-        }
-        else if (!str_contain("10 ", map[i][j]))
-            return (ECHARMAP);
-        j++;
-    }
-    if (j > 0 && str_contain("0NSWE", map[i][j - 1]))
+    status = check_other_line_loop(game, map, i, &j);
+    if (status)
+        return (status);
+    if (j > 0 && str_contain("0NSWED", map[i][j - 1]))
         return (EVOIDONSIDE);
     if (j > game->mapdata.width)
         game->mapdata.width = j;
+    return (0);
+}
+
+int     check_other_line_loop(t_game *game, char **map, int i, int *j)
+{
+    int status;
+
+    while (map[i][*j] && map[i][*j] != '\n')
+    {
+        if (str_contain("NSWE", map[i][*j]))
+        {
+            status = valid_nswe(game, map, i, *j);
+            if (status)
+                return (status);
+        }
+        else if (!str_contain("10D ", map[i][*j]))
+            return (ECHARMAP);
+        (*j)++;
+    }
     return (0);
 }
 
@@ -625,7 +655,7 @@ int flood_fill(char **map, t_vec2Di pos, int width, int height)
 {
     if (pos.x < 0 || pos.y < 0 || pos.x >= width || pos.y >= height)
         return (0);
-    if (str_contain("0NSWE", map[pos.y][pos.x]))
+    if (str_contain("0NSWED", map[pos.y][pos.x]))
         return (EMISSINGWALLS);
     if (str_contain("1X", map[pos.y][pos.x]))
         return (0);

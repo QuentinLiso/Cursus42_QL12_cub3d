@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 16:21:41 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/26 20:55:00 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/27 17:28:32 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,8 @@ void    print_tex(t_tex *texs)
     printf("Ceiling : %u, %u, %u\n",
         texs[CEILING].color >> 16 & 0xff,
         texs[CEILING].color >> 8 & 0xff,
-        texs[CEILING].color & 0xff);    
+        texs[CEILING].color & 0xff);
+    printf("Door : %s\n", texs[DOOR].path);
 }
 
 void    print_texbool(t_tex *texs)

@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:54:11 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/27 15:36:53 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/27 18:50:18 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ void    init_raycast(t_raycast *ray)
     ray->line_height = 0;
     ray->draw_start = 0;
     ray->draw_end = 0;
+    ray->collide = '\0';
 }
 
 // ========================================= RENDERING : RAYCAST
@@ -157,11 +158,24 @@ void    launch_dda_raycast(t_raycast *ray, t_game *game)
             ray->map.y += ray->step.y;
             ray->side = 1;
         }
-        if (collide_boundaries_i(game, ray->map))
-            break;
-        else if (collide_walls_i(game, ray->map))
-            break;
+        if (ray_collision(ray, game))
+            break ;
     }
+}
+
+bool    ray_collision(t_raycast *ray, t_game *game)
+{
+    if (collide_boundaries_i(game, ray->map))
+    {
+        ray->collide = '1';
+        return (true);
+    }
+    if (collide_walls_i(game, ray->map))
+    {
+        ray->collide = game->map[ray->map.y][ray->map.x];
+        return (true);
+    }
+    return (false);
 }
 
 bool    collide_boundaries_i(t_game *game, t_vec2Di pos)
@@ -172,7 +186,7 @@ bool    collide_boundaries_i(t_game *game, t_vec2Di pos)
 
 bool    collide_walls_i(t_game *game, t_vec2Di pos)
 {
-    return (game->map[pos.y][pos.x] > '0');
+    return (game->map[pos.y][pos.x] != '0');
 }
 
 void    set_line_height(t_raycast *ray, t_player *player, t_game *game)
@@ -218,6 +232,26 @@ void    init_draw(t_draw *draw, t_game *game, t_raycast *ray)
         draw->pixel.x = BLOCK - 1 - draw->pixel.x;
 }
 
+t_orient    get_texture_orientation(t_raycast *ray)
+{
+    if (ray->collide == 'D')
+        return (DOOR);
+    if (ray->side == 0)
+    {
+        if (ray->dir.x > 0)
+            return (EAST);
+        else
+            return (WEST);
+    }
+    else
+    {
+        if (ray->dir.y > 0)
+            return (NORTH);
+        else
+            return (SOUTH);
+    }
+}
+
 void    fill_draw_pixels(t_draw *draw, t_game *game, t_raycast *ray, int x)
 {
     int y;
@@ -233,24 +267,6 @@ void    fill_draw_pixels(t_draw *draw, t_game *game, t_raycast *ray, int x)
         color = tex.pixels[BLOCK * draw->pixel.y + draw->pixel.x];
         if (color > 0)
             draw->pixels[y][x] = color;
-    }
-}
-
-t_orient    get_texture_orientation(t_raycast *ray)
-{
-    if (ray->side == 0)
-    {
-        if (ray->dir.x > 0)
-            return (EAST);
-        else
-            return (WEST);
-    }
-    else
-    {
-        if (ray->dir.y > 0)
-            return (NORTH);
-        else
-            return (SOUTH);
     }
 }
 
@@ -299,6 +315,8 @@ void    draw_minimap(t_game *game)
         {
             if (mmap->map[mmap->pos.y][mmap->pos.x] == '1')
                 color = 0x2C3930;
+            else if (mmap->map[mmap->pos.y][mmap->pos.x] == 'D')
+                color = 0xA1E3F9;
             else
                 color = 0xA27B5C;
             if (mmap->pos.y == MINIMAP_H / 2 && mmap->pos.x == MINIMAP_W / 2)

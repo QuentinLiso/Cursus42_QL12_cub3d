@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 08:16:11 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/27 15:28:59 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/27 18:35:51 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,7 @@ typedef enum    e_orient
     EAST,
     FLOOR,
     CEILING,
+    DOOR
 }   t_orient;
 
 typedef enum    e_errnum
@@ -186,6 +187,7 @@ typedef struct s_raycast
     int         line_height;
     int         draw_start;
     int         draw_end;
+    char        collide;
 }   t_raycast;
 
 typedef struct s_img
@@ -227,7 +229,6 @@ typedef struct s_mapdata
     char    **filecontent;
     int     height;
     int     width;
-    int     end_index;
 }   t_mapdata;
 
 typedef struct s_minimap
@@ -251,7 +252,7 @@ typedef struct s_game
     int         win_width;
     t_player    player;
     t_raycast   ray;
-    t_tex       texs[6];
+    t_tex       texs[7];
 
     t_draw      draw;
     t_mapdata   mapdata;
@@ -288,6 +289,7 @@ void    init_game(t_game *game);
 void    init_player(t_player *player);
 void    init_game_tex(t_game *game);
 void    init_tex(t_tex  *tex);
+void    init_door_tex(t_tex *tex);
 void    init_mapdata(t_mapdata *mapdata);
 void    init_minimap(t_game *game, t_minimap *mmap);
 void    init_empty_img(t_img *img);
@@ -305,6 +307,7 @@ int fill_filecontent(t_game *game);
 int     parse_filecontent(t_game *game);
 
 int    tex_and_colors_empty(t_game *game);
+void    missing_tex_msg(t_game *game);
 int parse_line_tex(t_game *game, char *line);
 int get_texture_and_colors(t_game *game, char *line, int i);
 int get_text_path(t_game *game, char *line, int i, t_orient orient);
@@ -321,6 +324,7 @@ bool    is_empty_line(char *line);
 int     check_validity(t_game *game, char **map);
 int     check_edge_line(t_game *game, char *line);
 int     check_other_line(t_game *game, char **map, int i);
+int     check_other_line_loop(t_game *game, char **map, int i, int *j);
 bool    str_contain(char *str, char c);
 int     valid_nswe(t_game *game, char **map, int i, int j);
 int     fill_game_map(t_game *game, char **map);
@@ -342,6 +346,10 @@ bool    collide_boundaries(t_game *game, t_vec2D pos);
 bool    collide_walls(t_game *game, t_vec2D pos);
 int set_player_rotation(t_game *game);
 void    rotate_vec2D(t_vec2D *v, double angle);
+void    door_raycast(t_game *game);
+void    init_door_raycast(t_raycast *ray, t_player *player);
+bool    launch_door_raycast(t_raycast *ray, t_game *game, int max_dist);
+
 void    handle_input(t_game *game);
 int handle_key_press(int key, t_game *game);
 int handle_key_release(int key, t_game *game);
@@ -369,6 +377,7 @@ void    raycast_algo(t_game *game);
 void    init_player_raycast(t_raycast *ray, t_player *player, int x);
 void    init_dda_raycast(t_raycast *ray, t_player *player);
 void    launch_dda_raycast(t_raycast *ray, t_game *game);
+bool    ray_collision(t_raycast *ray, t_game *game);
 bool    collide_boundaries_i(t_game *game, t_vec2Di pos);
 bool    collide_walls_i(t_game *game, t_vec2Di pos);
 void    set_line_height(t_raycast *ray, t_player *player, t_game *game);

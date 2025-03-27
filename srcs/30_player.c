@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:51:54 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/26 20:45:44 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/27 18:48:39 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,7 @@ bool    collide_boundaries(t_game *game, t_vec2D pos)
 
 bool    collide_walls(t_game *game, t_vec2D pos)
 {
-    if (game->map[(int)pos.y][(int)pos.x] == '1')
+    if (str_contain("1D", game->map[(int)pos.y][(int)pos.x]))
         return (true);
     return (false);
 }
@@ -172,6 +172,54 @@ void    rotate_vec2D(t_vec2D *v, double angle)
     v->y = cur_x * sin_a + v->y * cos_a;
 }
 
+void    door_raycast(t_game *game)
+{
+    t_raycast   ray;
+    t_player    *player;
+
+    player = &game->player;
+    init_door_raycast(&ray, player);
+    init_dda_raycast(&ray, player);
+    if (launch_door_raycast(&ray, game, 2))
+        game->map[ray.map.y][ray.map.x] = '0';
+}
+
+void    init_door_raycast(t_raycast *ray, t_player *player)
+{
+    init_raycast(ray);
+    ray->dir.x = player->dir.x;
+    ray->dir.y = player->dir.y;
+    ray->map.x = (int)player->pos.x;
+    ray->map.y = (int)player->pos.y;
+    ray->deltadist.x = (fabs(1 / ray->dir.x));
+    ray->deltadist.y = (fabs(1 / ray->dir.y));
+}
+
+bool    launch_door_raycast(t_raycast *ray, t_game *game, int max_dist)
+{
+    int steps;
+
+    steps = -1;
+    while (++steps < max_dist)
+    {
+        if (ray->sidedist.x < ray->sidedist.y)
+        {
+            ray->sidedist.x += ray->deltadist.x;
+            ray->map.x += ray->step.x;
+        }
+        else
+        {
+            ray->sidedist.y += ray->deltadist.y;
+            ray->map.y += ray->step.y;
+        }
+        if (game->map[ray->map.y][ray->map.x] == 'D')
+            return (true);
+        if (game->map[ray->map.y][ray->map.x] == '1')
+            break ;
+    }
+    return (false);
+}
+
 void    handle_input(t_game *game)
 {
     mlx_hook(game->win, ClientMessage, NoEventMask, quit_c3d, game);
@@ -199,6 +247,8 @@ int handle_key_press(int key, t_game *game)
         player->move.x = -1;
     if (key == XK_d)
         player->move.x = 1;
+    if (key == XK_e)
+        door_raycast(game);
     return (0);
 }
 

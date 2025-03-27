@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:53:33 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/27 15:36:19 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/27 17:32:09 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ void    init_texs(t_game *game)
     load_tex(game, SOUTH);
     load_tex(game, WEST);
     load_tex(game, EAST);
+    load_tex(game, DOOR);
 }
 
 void    load_tex(t_game *game, t_orient orient)
