@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 08:16:11 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/26 17:44:21 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/27 15:28:59 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,9 @@
 # define MOVESPEED 0.1
 # define ROTSPEED 0.05
 # define MOUSE_SENS 0.0001
+# define CROSSHAIR  6
+# define MINIMAP_W 40
+# define MINIMAP_H 20
 
 # define NOERR_M "No error"
 # define EARGS_M "Wrong arguments"
@@ -84,7 +87,7 @@ typedef enum    e_orient
     WEST,
     EAST,
     FLOOR,
-    CEILING
+    CEILING,
 }   t_orient;
 
 typedef enum    e_errnum
@@ -145,6 +148,17 @@ typedef struct s_vec2D
     double y;
 }   t_vec2D;
 
+typedef struct s_line
+{
+    t_vec2Di    delta;
+    t_vec2Di    step;
+    int         error;
+    int         error_2;
+    int         thickness;
+    t_vec2Di    perp_thick;
+}   t_line;
+
+
 typedef struct s_player
 {
     char        orientation;
@@ -181,6 +195,8 @@ typedef struct s_img
     int     bpp;
     int     size_line;
     int     endian;
+    int     width;
+    int     height;
 }   t_img;
 
 typedef struct s_tex
@@ -216,12 +232,15 @@ typedef struct s_mapdata
 
 typedef struct s_minimap
 {
-    char        **map;
-    t_img       *img;
+    char        map[MINIMAP_H][MINIMAP_W];
+    t_vec2Di    pos;
+    t_img       img;
     int         size;
     t_vec2Di    offset;
     int         view_dist;
     int         tile_size;
+    t_player    *player;
+    int         player_ray;
 }   t_minimap;
 
 typedef struct s_game
@@ -233,14 +252,16 @@ typedef struct s_game
     t_player    player;
     t_raycast   ray;
     t_tex       texs[6];
+
     t_draw      draw;
     t_mapdata   mapdata;
     char        **map;
-    t_img       minimap;
+    t_minimap   mmap;
 }   t_game;
 
 // Helpers
 void    print_strarr(char **arr);
+void    print_minimap(t_game *game);
 void    print_tex(t_tex *tex);
 void    print_texbool(t_tex *texs);
 void    show_player_stats(t_player player);
@@ -268,6 +289,7 @@ void    init_player(t_player *player);
 void    init_game_tex(t_game *game);
 void    init_tex(t_tex  *tex);
 void    init_mapdata(t_mapdata *mapdata);
+void    init_minimap(t_game *game, t_minimap *mmap);
 void    init_empty_img(t_img *img);
 
 int parse_args(t_game *game, char **av);
@@ -338,6 +360,8 @@ void    put_pixel_to_img(t_img *img, t_vec2Di coord, int color);
 
 int     update_render(t_game *game);
 void    update_render_frame(t_game *game);
+
+
 void    init_tex_pixels(t_game *game);
 void    init_draw_pixels(t_game *game);
 void    init_raycast(t_raycast *ray);
@@ -355,8 +379,22 @@ void    init_draw(t_draw *draw, t_game *game, t_raycast *ray);
 void    fill_draw_pixels(t_draw *draw, t_game *game, t_raycast *ray, int x);
 t_orient    get_texture_orientation(t_raycast *ray);
 
+void    draw_crosshair(t_game *game);
+void    draw_square(t_draw *draw, t_vec2Di start, t_vec2Di end, int color);
+void    draw_minimap(t_game *game);
+void    get_minimap_submap(t_game *game);
+bool    is_in_map(t_vec2Di pos, t_game *game);
+void    draw_minimap_tile(t_minimap *mmap, t_vec2Di tile, t_img *img, int color);
+void    draw_minimap_orient(t_minimap *mmap);
+void    draw_line(t_img *img, t_vec2Di start, t_vec2Di end, int color);
+void    init_line(t_line *line, t_vec2Di start, t_vec2Di end, int thickness);
+void    draw_thickness(t_img *img, t_line *line, t_vec2Di start, int color);
+void    bresenham_next_pixel(t_line *line, t_vec2Di *start);
+
+
 void    put_frame_to_screen(t_game *game);
 void    update_frame_pixel(t_game *game, t_img *img, t_vec2Di coord);
-
+int get_pixel_from_img(t_img *img, t_vec2Di coord);
+void    put_minimap_to_frame(t_img *img, t_minimap *mmap);
 
 #endif

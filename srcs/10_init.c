@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:50:23 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/26 17:34:51 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/27 15:16:16 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void    init_game(t_game *game)
     game->draw.pixels = NULL;
     init_mapdata(&game->mapdata);
     game->map = NULL;
-    init_empty_img(&game->minimap);
+    init_minimap(game, &game->mmap);
 }
 
 void    init_player(t_player *player)
@@ -69,6 +69,13 @@ void    init_mapdata(t_mapdata *mapdata)
     mapdata->height = 0;
     mapdata->width = 0;
     mapdata->end_index = 0;
+}
+
+void    init_minimap(t_game *game, t_minimap *mmap)
+{
+    mmap->tile_size = 8;
+    mmap->player = &game->player;
+    mmap->player_ray = 15;
 }
 
 void    init_empty_img(t_img *img)

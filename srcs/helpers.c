@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 16:21:41 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/26 17:46:15 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/26 20:55:00 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,23 @@ void    print_strarr(char **arr)
     while (*arr)
         ft_putendl_fd(*arr++, STDOUT_FILENO);
     // ft_putchar_fd('\n', STDOUT_FILENO);
+}
+
+void    print_minimap(t_game *game)
+{
+    int x;
+    int y;
+
+    y = -1;
+    printf("**********\n");
+    while (++y < MINIMAP_H)
+    {
+        x = -1;
+        while (++x < MINIMAP_W)
+            ft_putchar_fd(game->mmap.map[y][x], 1);
+        ft_putchar_fd('\n', 1);
+    }
+    printf("***********\n");
 }
 
 void    print_tex(t_tex *texs)

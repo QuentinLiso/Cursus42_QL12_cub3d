@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   freeing.c                                          :+:      :+:    :+:   */
+/*   01_freeing.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:49:50 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/26 14:49:56 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/27 15:36:57 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ void    free_game_mlx(t_game *game)
 {
     if (game->mlx && game->win)
     {
+        if (game->mmap.img.img)
+            mlx_destroy_image(game->mlx, game->mmap.img.img);
         mlx_hook(game->win, MotionNotify, 0, NULL, NULL);
         mlx_destroy_window(game->mlx, game->win);
     }

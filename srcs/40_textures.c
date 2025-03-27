@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:53:33 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/26 17:43:07 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/27 15:36:19 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,17 @@
 
 void    init_mlx(t_game *game)
 {
+    t_minimap   *mmap;
+
+    mmap = &game->mmap;
     game->mlx = mlx_init();
     if (!game->mlx)
         clean_c3d_exit(game, perror_c3d(EMLXINIT));
     game->win = mlx_new_window(game->mlx, WIDTH, HEIGHT, "cub3d");
     if (!game->win)
         clean_c3d_exit(game, perror_c3d(EMLXWIN));
-    mlx_mouse_hide(game->mlx, game->win);
+    init_img(game, &mmap->img,
+        MINIMAP_W * mmap->tile_size, MINIMAP_H * mmap->tile_size);
     mlx_mouse_move(game->mlx, game->win, WIDTH / 2, HEIGHT / 2);
 }
 
