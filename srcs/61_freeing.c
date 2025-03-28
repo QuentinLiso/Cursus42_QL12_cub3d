@@ -1,39 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   02_utils.c                                         :+:      :+:    :+:   */
+/*   61_freeing.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/20 08:16:07 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/26 17:27:59 by qliso            ###   ########.fr       */
+/*   Created: 2025/03/26 14:49:50 by qliso             #+#    #+#             */
+/*   Updated: 2025/03/28 16:10:19 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-bool    is_space(char c)
+void	free_arr(void **arr)
 {
-    return (c == ' ' || c == '\t' || c == '\n');
+	int	i;
+
+	if (!arr)
+		return ;
+	i = -1;
+	while (arr[++i])
+		free(arr[i]);
+	free(arr);
 }
 
-void    skip_blank(char *line, int *i)
+void	free_str(char **str)
 {
-    while (is_space(line[*i]))
-        (*i)++;
+	if (!*str)
+		return ;
+	free(*str);
+	*str = NULL;
 }
-
-int quit_c3d(t_game *game)
-{
-    clean_c3d_exit(game, 0);
-    return (0);
-}
-
-void    clean_c3d_exit(t_game *game, int errnum)
-{
-    if (!game)
-        exit(errnum);
-    free_game(game);
-    exit(errnum);
-}
-

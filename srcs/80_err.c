@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   03_err.c                                           :+:      :+:    :+:   */
+/*   80_err.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 16:18:02 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/26 19:57:05 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/28 16:12:49 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,23 +21,24 @@ const char	*get_err_msg(t_errnum err)
 		EMISSINGCOLF_M, EDOUBLETEX_M, EPATHTEX_M, ERGBFORMAT_M, ERGBVAL_M,
 		EEMPTYMAP_M, EMAPTOOSMALL_M, ECHAREDGE_M, ECHARMAP_M, EVOIDONSIDE_M,
 		EDOUBLEORIENT_M, EORIENTONSIDE_M, EMISSINGORIENT_M, EPLAYERNOSPACE_M,
-		EMISSINGWALLS_M, EMLXINIT_M, EMLXWIN_M, EMLXIMG_M, ELOADTEXTURE_M, 
+		EMISSINGWALLS_M, EMLXINIT_M, EMLXWIN_M, EMLXIMG_M, ELOADTEXTURE_M,
 		EGETIMGADDR_M, EUNKNOWN_M
 	};
+
 	if (err >= (sizeof(msg) / sizeof(char *)) || err < 0)
 		return (msg[EUNKNOWN]);
 	return (msg[err]);
 }
 
-int perror_c3d(t_errnum errnum)
+int	perror_c3d(t_errnum errnum)
 {
 	const char	*msg = get_err_msg(errnum);
 
-    ft_putstr_fd("CUB3D ERROR", STDERR_FILENO);
-    if (msg)
-    {
-        ft_putstr_fd(": ", STDERR_FILENO);
-        ft_putendl_fd((char *)msg, STDERR_FILENO);
-    }
-    return (errnum);
+	ft_putstr_fd("CUB3D ERROR", STDERR_FILENO);
+	if (msg)
+	{
+		ft_putstr_fd(": ", STDERR_FILENO);
+		ft_putendl_fd((char *)msg, STDERR_FILENO);
+	}
+	return (errnum);
 }

@@ -6,22 +6,38 @@
 #    By: qliso <qliso@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/15 10:15:28 by qliso             #+#    #+#              #
-#    Updated: 2025/03/26 17:29:40 by qliso            ###   ########.fr        #
+#    Updated: 2025/03/28 14:02:04 by qliso            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRCS=$(addprefix ./srcs/, \
 		$(addsuffix .c, \
 			00_main \
-			01_freeing \
-			02_utils \
-			03_err \
 			10_init \
+			11_init \
 			20_parsing \
+			21_parsing \
+			22_parsing \
+			23_parsing \
+			24_parsing \
+			25_parsing \
+			26_parsing \
 			30_player \
+			31_player \
+			32_player \
+			33_player \
 			40_textures \
 			50_rendering \
-			helpers \
+			51_rendering \
+			52_rendering \
+			53_rendering \
+			54_rendering \
+			55_rendering \
+			56_rendering \
+			60_freeing \
+			61_freeing \
+			70_utils \
+			80_err \
 		)\
 	)
 OBJ=$(SRCS:%.c=%.o)

@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 08:16:11 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/27 18:35:51 by qliso            ###   ########.fr       */
+/*   Updated: 2025/03/28 16:47:35 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 # include <errno.h>
 
 // Define
+# define PI 3.14159265359
 # define WIDTH 1024
 # define HEIGHT 720
 # define BLOCK 64
@@ -77,333 +78,314 @@
 # define EGETIMGADDR_M "MLX img get addr failed"
 # define EUNKNOWN_M "Unknown error"
 
-typedef uint32_t    t_uint;
+typedef uint32_t	t_uint;
 
 // Enums
-typedef enum    e_orient
+typedef enum e_orient
 {
-    NORTH,
-    SOUTH,
-    WEST,
-    EAST,
-    FLOOR,
-    CEILING,
-    DOOR
-}   t_orient;
+	NORTH,
+	SOUTH,
+	WEST,
+	EAST,
+	FLOOR,
+	CEILING,
+	DOOR
+}	t_orient;
 
-typedef enum    e_errnum
+typedef enum e_errnum
 {
-    NOERR,
-    EARGS,
-    EDIR,
-    EOPEN,
-    EFILEEXT,
-    EMALLOC,
-    EWRONGCHAR,
-    EEMPTYFILE,
-    EMISSINGTEX,
-    EMISSINGTEXN,
-    EMISSINGTEXS,
-    EMISSINGTEXW,
-    EMISSINGTEXE,
-    EMISSINGCOLC,
-    EMISSINGCOLF,
-    EDOUBLETEX,
-    EPATHTEX,
-    ERGBFORMAT,
-    ERGBVAL,
-    EEMPTYMAP,
-    EMAPTOOSMALL,
-    ECHAREDGE,
-    ECHARMAP,
-    EVOIDONSIDE,
-    EDOUBLEORIENT,
-    EORIENTONSIDE,
-    EMISSINGORIENT,
-    EPLAYERNOSPACE,
-    EMISSINGWALLS,
-    EMLXINIT,
-    EMLXWIN,
-    EMLXIMG,
-    ELOADTEXTURE,
-    EGETIMGADDR,
-    EUNKNOWN
-}   t_errnum;
+	NOERR,
+	EARGS,
+	EDIR,
+	EOPEN,
+	EFILEEXT,
+	EMALLOC,
+	EWRONGCHAR,
+	EEMPTYFILE,
+	EMISSINGTEX,
+	EMISSINGTEXN,
+	EMISSINGTEXS,
+	EMISSINGTEXW,
+	EMISSINGTEXE,
+	EMISSINGCOLC,
+	EMISSINGCOLF,
+	EDOUBLETEX,
+	EPATHTEX,
+	ERGBFORMAT,
+	ERGBVAL,
+	EEMPTYMAP,
+	EMAPTOOSMALL,
+	ECHAREDGE,
+	ECHARMAP,
+	EVOIDONSIDE,
+	EDOUBLEORIENT,
+	EORIENTONSIDE,
+	EMISSINGORIENT,
+	EPLAYERNOSPACE,
+	EMISSINGWALLS,
+	EMLXINIT,
+	EMLXWIN,
+	EMLXIMG,
+	ELOADTEXTURE,
+	EGETIMGADDR,
+	EUNKNOWN
+}	t_errnum;
 
 // Structs
 typedef struct s_error
 {
-    t_errnum    errnum;
-    const char  *msg;
-}   t_error;
+	t_errnum	errnum;
+	const char	*msg;
+}	t_error;
 
 typedef struct s_vec2Di
 {
-    int x;
-    int y;
-}   t_vec2Di;
+	int	x;
+	int	y;
+}	t_vec2Di;
 
 typedef struct s_vec2D
 {
-    double x;
-    double y;
-}   t_vec2D;
+	double	x;
+	double	y;
+}	t_vec2D;
 
 typedef struct s_line
 {
-    t_vec2Di    delta;
-    t_vec2Di    step;
-    int         error;
-    int         error_2;
-    int         thickness;
-    t_vec2Di    perp_thick;
-}   t_line;
-
+	t_vec2Di	delta;
+	t_vec2Di	step;
+	int			error;
+	int			error_2;
+	int			thickness;
+	t_vec2Di	perp_thick;
+}	t_line;
 
 typedef struct s_player
 {
-    char        orientation;
-    t_vec2Di    spawn;
-    t_vec2D     pos;
-    t_vec2D     dir;
-    t_vec2D     plane;
-    int         has_moved;
-    t_vec2Di    move;
-    int         rotate;
-    int         mouse_rotate;
-}   t_player;
+	char		orientation;
+	t_vec2Di	spawn;
+	t_vec2D		pos;
+	t_vec2D		dir;
+	t_vec2D		plane;
+	int			has_moved;
+	t_vec2Di	move;
+	int			rotate;
+	int			mouse_rotate;
+}	t_player;
 
 typedef struct s_raycast
 {
-    double      camera_x;
-    t_vec2D     dir;
-    t_vec2Di    map;
-    t_vec2Di    step;
-    t_vec2D     sidedist;
-    t_vec2D     deltadist;
-    double      wall_dist;
-    double      wall_x;
-    int         side;
-    int         line_height;
-    int         draw_start;
-    int         draw_end;
-    char        collide;
-}   t_raycast;
+	double		camera_x;
+	t_vec2D		dir;
+	t_vec2Di	map;
+	t_vec2Di	step;
+	t_vec2D		sidedist;
+	t_vec2D		deltadist;
+	double		wall_dist;
+	double		wall_x;
+	int			side;
+	int			line_height;
+	int			draw_start;
+	int			draw_end;
+	char		collide;
+}	t_raycast;
 
 typedef struct s_img
 {
-    void    *img;
-    int     *addr;
-    int     bpp;
-    int     size_line;
-    int     endian;
-    int     width;
-    int     height;
-}   t_img;
+	void	*img;
+	int		*addr;
+	int		bpp;
+	int		size_line;
+	int		endian;
+	int		width;
+	int		height;
+}	t_img;
 
 typedef struct s_tex
 {
-    bool    filled;
-    char    *path;
-    t_uint    color;
-    t_img   img;
-    int     pixels[BLOCK * BLOCK];
-    int     width;
-    int     height;
-}   t_tex;
+	bool	filled;
+	char	*path;
+	t_uint	color;
+	t_img	img;
+	int		pixels[BLOCK * BLOCK];
+	int		width;
+	int		height;
+}	t_tex;
 
 typedef struct s_draw
 {
-    t_orient    orient;
-    double      step;
-    double      pos;
-    t_vec2Di    pixel;
-    int         **pixels;
-}   t_draw;
+	t_orient	orient;
+	double		step;
+	double		pos;
+	t_vec2Di	pixel;
+	int			**pixels;
+}	t_draw;
 
 typedef struct s_mapdata
 {
-    int     fd;
-    int     line_count;
-    char    *filepath;
-    char    **filecontent;
-    int     height;
-    int     width;
-}   t_mapdata;
+	int		fd;
+	int		line_count;
+	char	*filepath;
+	char	**filecontent;
+	int		height;
+	int		width;
+}	t_mapdata;
 
 typedef struct s_minimap
 {
-    char        map[MINIMAP_H][MINIMAP_W];
-    t_vec2Di    pos;
-    t_img       img;
-    int         size;
-    t_vec2Di    offset;
-    int         view_dist;
-    int         tile_size;
-    t_player    *player;
-    int         player_ray;
-}   t_minimap;
+	char		map[MINIMAP_H][MINIMAP_W];
+	int			width;
+	int			height;
+	t_img		img;
+	int			tile_size;
+	t_player	*player;
+	int			player_ray;
+	t_vec2Di	pos;
+}	t_minimap;
 
 typedef struct s_game
 {
-    void        *mlx;
-    void        *win;
-    int         win_height;
-    int         win_width;
-    t_player    player;
-    t_raycast   ray;
-    t_tex       texs[7];
+	void		*mlx;
+	void		*win;
+	int			win_height;
+	int			win_width;
+	t_img		frame;
+	t_player	player;
+	t_raycast	ray;
+	t_tex		texs[7];
+	t_draw		draw;
+	t_mapdata	mapdata;
+	char		**map;
+	t_minimap	mmap;
+}	t_game;
 
-    t_draw      draw;
-    t_mapdata   mapdata;
-    char        **map;
-    t_minimap   mmap;
-}   t_game;
+// Init
+void		init_game(t_game *game);
+void		init_player(t_player *player);
+void		init_game_tex(t_game *game);
+void		init_tex(t_tex *tex);
+void		init_door_tex(t_tex *tex);
+void		init_mapdata(t_mapdata *mapdata);
+void		init_minimap(t_game *game, t_minimap *mmap);
+void		init_empty_img(t_img *img);
 
-// Helpers
-void    print_strarr(char **arr);
-void    print_minimap(t_game *game);
-void    print_tex(t_tex *tex);
-void    print_texbool(t_tex *texs);
-void    show_player_stats(t_player player);
+// Parsing
+int			parse_args(t_game *game, char **av);
+int			check_valid_file(char *av, char *ext);
+bool		check_file_isdir(char *av);
+bool		check_file_ext(char *av, char *ext);
+int			store_file_data(t_game *game, char *filepath);
+int			get_line_count(char *file, int *map_line_count);
+int			fill_filecontent(t_game *game);
+int			parse_filecontent(t_game *game);
+int			tex_and_colors_empty(t_game *game);
+void		missing_tex_msg(t_game *game);
+int			parse_line_tex(t_game *game, char *line);
+int			get_texture_and_colors(t_game *game, char *line, int i);
+int			get_text_path(t_game *game, char *line, int i, t_orient orient);
+int			get_text_file_path(char *line, int i, char **filepath);
+int			get_cf_color(t_game *game, char *line, int i, t_orient orient);
+int			get_rgb(char *line, t_uint *rgb, int i);
+int			get_r(char *line, t_uint *rgb, int *i);
+int			get_g(char *line, t_uint *rgb, int *i);
+int			get_b(char *line, t_uint *rgb, int *i);
+int			build_map(t_game *game, char **content, int i);
+int			skip_empty_lines(char **content, int *i);
+bool		is_empty_line(char *line);
+int			check_validity(t_game *game, char **map);
+int			check_edge_line(t_game *game, char *line);
+int			check_other_line(t_game *game, char **map, int i);
+int			check_other_line_loop(t_game *game, char **map, int i, int *j);
+bool		str_contain(char *str, char c);
+int			valid_nswe(t_game *game, char **map, int i, int j);
+int			fill_game_map(t_game *game, char **map);
+int			valid_nswe_side(t_game *game);
+int			check_flood_fill(t_game *game);
+int			flood_fill(char **map, t_vec2Di pos, int width, int height);
+void		fill_one(t_game *game);
 
+// Player
+void		set_player_start_pos(t_game *game);
+void		init_player_north(t_player *player);
+void		init_player_south(t_player *player);
+void		init_player_west(t_player *player);
+void		init_player_east(t_player *player);
+int			set_player_movement(t_game *game);
+int			move_player(t_game *game, t_vec2D move);
+int			check_valid_move(t_game *game, t_vec2D new_pos);
+bool		collide_boundaries(t_game *game, t_vec2D pos);
+bool		collide_walls(t_game *game, t_vec2D pos);
+int			set_player_rotation(t_game *game);
+void		rotate_vec2d(t_vec2D *v, double angle);
+void		door_raycast(t_game *game);
+void		init_door_raycast(t_raycast *ray, t_player *player);
+bool		launch_door_raycast(t_raycast *ray, t_game *game, int max_dist);
+void		handle_input(t_game *game);
+int			handle_key_press(int key, t_game *game);
+int			handle_key_release(int key, t_game *game);
+int			handle_mouse(int x, int y, t_game *game);
 
-// Functions
-bool    is_space(char c);
-void    skip_blank(char *line, int *i);
+// Textures
+void		init_mlx(t_game *game);
+void		init_texs(t_game *game);
+void		load_tex(t_game *game, t_orient orient);
+void		fill_tex_pixels(t_img *img, t_tex *tex);
+void		load_tex_solid(t_game *game, t_orient orient, int color);
 
+// Rendering
+int			update_render(t_game *game);
+void		update_render_frame(t_game *game);
+void		reset_draw_pixels(t_game *game);
+void		init_raycast(t_raycast *ray);
+void		raycast_algo(t_game *game);
+void		init_player_raycast(t_raycast *ray, t_player *player, int x);
+void		init_dda_raycast(t_raycast *ray, t_player *player);
+void		launch_dda_raycast(t_raycast *ray, t_game *game);
+bool		ray_collision(t_raycast *ray, t_game *game);
+bool		collide_boundaries_i(t_game *game, t_vec2Di pos);
+bool		collide_walls_i(t_game *game, t_vec2Di pos);
+void		set_line_height(t_raycast *ray, t_player *player, t_game *game);
+void		set_draw_pixels(t_game *game, t_raycast *ray, int x);
+void		init_draw(t_draw *draw, t_game *game, t_raycast *ray);
+t_orient	get_texture_orientation(t_raycast *ray);
+void		fill_draw_pixels(t_draw *draw, t_game *game, t_raycast *ray, int x);
+void		draw_crosshair(t_game *game);
+void		draw_square(t_draw *draw, t_vec2Di start, t_vec2Di end, int color);
+void		draw_minimap(t_game *game);
+void		get_minimap_submap(t_game *game);
+bool		is_in_map(t_vec2Di pos, t_game *game);
+void		draw_minimap_tile(t_minimap *mmap, t_vec2Di tile, t_img *img,
+				int color);
+void		draw_minimap_orient(t_minimap *mmap);
+void		draw_line(t_img *img, t_vec2Di start, t_vec2Di end, int color);
+void		init_line(t_line *line, t_vec2Di start, t_vec2Di end,
+				int thickness);
+void		draw_thickness(t_img *img, t_line *line, t_vec2Di start, int color);
+void		bresenham_next_pixel(t_line *line, t_vec2Di *start);
+void		put_minimap_to_frame(t_img *img, t_minimap *mmap);
+void		put_frame_to_screen(t_game *game);
+void		init_img(t_game *game, t_img *img, int width, int height);
+void		update_frame_pixel(t_game *game, t_img *img, t_vec2Di coord);
+void		put_pixel_to_img(t_img *img, t_vec2Di coord, int color);
+int			get_pixel_from_img(t_img *img, t_vec2Di coord);
+
+// Freeing
+void		free_game(t_game *game);
+void		free_game_mlx(t_game *game);
+void		free_game_textures(t_game *game);
+void		free_game_pixels(t_game *game);
+void		free_game_map(t_game *game);
+void		free_arr(void **arr);
+void		free_str(char **str);
+
+// Utils
+bool		is_space(char c);
+void		skip_blank(char *line, int *i);
+int			quit_c3d(t_game *game);
+void		clean_c3d_exit(t_game *game, int errnum);
+
+// Err
 const char	*get_err_msg(t_errnum err);
-int perror_c3d(t_errnum errnum);
-
-int quit_c3d(t_game *game);
-void    clean_c3d_exit(t_game *game, int errnum);
-void    free_game(t_game *game);
-void    free_game_mlx(t_game *game);
-void    free_game_textures(t_game *game);
-void    free_game_pixels(t_game *game);
-void    free_game_map(t_game *game);
-void    free_arr(void **arr);
-void    free_str(char **str);
-
-void    init_game(t_game *game);
-void    init_player(t_player *player);
-void    init_game_tex(t_game *game);
-void    init_tex(t_tex  *tex);
-void    init_door_tex(t_tex *tex);
-void    init_mapdata(t_mapdata *mapdata);
-void    init_minimap(t_game *game, t_minimap *mmap);
-void    init_empty_img(t_img *img);
-
-int parse_args(t_game *game, char **av);
-
-int check_valid_file(char *av, char *ext);
-bool    check_file_isdir(char *av);
-bool    check_file_ext(char *av, char *ext);
-
-int    store_file_data(t_game *game, char *filepath);
-int get_line_count(char *file, int *map_line_count);
-int fill_filecontent(t_game *game);
-
-int     parse_filecontent(t_game *game);
-
-int    tex_and_colors_empty(t_game *game);
-void    missing_tex_msg(t_game *game);
-int parse_line_tex(t_game *game, char *line);
-int get_texture_and_colors(t_game *game, char *line, int i);
-int get_text_path(t_game *game, char *line, int i, t_orient orient);
-int get_text_file_path(char *line, int i, char **filepath);
-int get_cf_color(t_game *game, char *line, int i, t_orient orient);
-int get_rgb(char *line, t_uint *rgb, int i);
-int get_r(char *line, t_uint *rgb, int *i);
-int get_g(char *line, t_uint *rgb, int *i);
-int get_b(char *line, t_uint *rgb, int *i);
-
-int     build_map(t_game *game, char **content, int i);
-int     skip_empty_lines(char **content, int *i);
-bool    is_empty_line(char *line);
-int     check_validity(t_game *game, char **map);
-int     check_edge_line(t_game *game, char *line);
-int     check_other_line(t_game *game, char **map, int i);
-int     check_other_line_loop(t_game *game, char **map, int i, int *j);
-bool    str_contain(char *str, char c);
-int     valid_nswe(t_game *game, char **map, int i, int j);
-int     fill_game_map(t_game *game, char **map);
-int    valid_nswe_side(t_game *game);
-int check_flood_fill(t_game *game);
-int flood_fill(char **map, t_vec2Di pos, int width, int height);
-void    fill_one(t_game *game);
-
-void    set_player_start_pos(t_game *game);
-void    init_player_north(t_player *player);
-void    init_player_south(t_player *player);
-void    init_player_west(t_player *player);
-void    init_player_east(t_player *player);
-
-int set_player_movement(t_game *game);
-int move_player(t_game *game, t_vec2D move);
-int check_valid_move(t_game *game, t_vec2D new_pos);
-bool    collide_boundaries(t_game *game, t_vec2D pos);
-bool    collide_walls(t_game *game, t_vec2D pos);
-int set_player_rotation(t_game *game);
-void    rotate_vec2D(t_vec2D *v, double angle);
-void    door_raycast(t_game *game);
-void    init_door_raycast(t_raycast *ray, t_player *player);
-bool    launch_door_raycast(t_raycast *ray, t_game *game, int max_dist);
-
-void    handle_input(t_game *game);
-int handle_key_press(int key, t_game *game);
-int handle_key_release(int key, t_game *game);
-int handle_mouse(int x, int y, t_game *game);
-
-void    init_mlx(t_game *game);
-void    init_texs(t_game *game);
-void    load_tex(t_game *game, t_orient orient);
-void    fill_tex_pixels(t_img *img, t_tex *tex);
-
-void    init_tex_array(t_game *game);
-void    init_img(t_game *game, t_img *img, int width, int height);
-void    init_tex_img(t_game *game, t_img *img, char *path);
-int *xpm_to_img(t_game *game, char *path);
-void    put_pixel_to_img(t_img *img, t_vec2Di coord, int color);
-
-int     update_render(t_game *game);
-void    update_render_frame(t_game *game);
-
-
-void    init_tex_pixels(t_game *game);
-void    init_draw_pixels(t_game *game);
-void    init_raycast(t_raycast *ray);
-void    raycast_algo(t_game *game);
-void    init_player_raycast(t_raycast *ray, t_player *player, int x);
-void    init_dda_raycast(t_raycast *ray, t_player *player);
-void    launch_dda_raycast(t_raycast *ray, t_game *game);
-bool    ray_collision(t_raycast *ray, t_game *game);
-bool    collide_boundaries_i(t_game *game, t_vec2Di pos);
-bool    collide_walls_i(t_game *game, t_vec2Di pos);
-void    set_line_height(t_raycast *ray, t_player *player, t_game *game);
-void    set_game_tex_pixels(t_game *game, t_raycast *ray, int x);
-
-void    set_draw_pixels(t_game *game, t_raycast *ray, int x);
-void    init_draw(t_draw *draw, t_game *game, t_raycast *ray);
-void    fill_draw_pixels(t_draw *draw, t_game *game, t_raycast *ray, int x);
-t_orient    get_texture_orientation(t_raycast *ray);
-
-void    draw_crosshair(t_game *game);
-void    draw_square(t_draw *draw, t_vec2Di start, t_vec2Di end, int color);
-void    draw_minimap(t_game *game);
-void    get_minimap_submap(t_game *game);
-bool    is_in_map(t_vec2Di pos, t_game *game);
-void    draw_minimap_tile(t_minimap *mmap, t_vec2Di tile, t_img *img, int color);
-void    draw_minimap_orient(t_minimap *mmap);
-void    draw_line(t_img *img, t_vec2Di start, t_vec2Di end, int color);
-void    init_line(t_line *line, t_vec2Di start, t_vec2Di end, int thickness);
-void    draw_thickness(t_img *img, t_line *line, t_vec2Di start, int color);
-void    bresenham_next_pixel(t_line *line, t_vec2Di *start);
-
-
-void    put_frame_to_screen(t_game *game);
-void    update_frame_pixel(t_game *game, t_img *img, t_vec2Di coord);
-int get_pixel_from_img(t_img *img, t_vec2Di coord);
-void    put_minimap_to_frame(t_img *img, t_minimap *mmap);
+int			perror_c3d(t_errnum errnum);
 
 #endif

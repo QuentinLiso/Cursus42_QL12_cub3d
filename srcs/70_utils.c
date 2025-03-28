@@ -1,31 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ess.c                                              :+:      :+:    :+:   */
+/*   70_utils.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/20 12:08:01 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/26 09:07:40 by qliso            ###   ########.fr       */
+/*   Created: 2025/03/20 08:16:07 by qliso             #+#    #+#             */
+/*   Updated: 2025/03/28 16:11:32 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-typedef struct s_test
+bool	is_space(char c)
 {
-    char    *tex;
-}   t_test;
+	return (c == ' ' || c == '\t' || c == '\n');
+}
 
-typedef struct s_jeu
+void	skip_blank(char *line, int *i)
 {
-    t_test  test[4];
-}   t_jeu;
+	while (is_space(line[*i]))
+		(*i)++;
+}
 
-
-
-int main(/*int ac, char **av*/)
+int	quit_c3d(t_game *game)
 {
+	clean_c3d_exit(game, 0);
+	return (0);
+}
 
-    return (0);
+void	clean_c3d_exit(t_game *game, int errnum)
+{
+	if (!game)
+		exit(errnum);
+	free_game(game);
+	exit(errnum);
 }
