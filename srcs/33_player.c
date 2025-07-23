@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:51:54 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/28 15:49:12 by qliso            ###   ########.fr       */
+/*   Updated: 2025/04/06 11:52:44 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,11 @@ int	handle_key_press(int key, t_game *game)
 		player->rotate -= 1;
 	if (key == XK_Right)
 		player->rotate += 1;
-	if (key == XK_z)
+	if (key == XK_w)
 		player->move.y = 1;
 	if (key == XK_s)
 		player->move.y = -1;
-	if (key == XK_q)
+	if (key == XK_a)
 		player->move.x = -1;
 	if (key == XK_d)
 		player->move.x = 1;
@@ -55,11 +55,11 @@ int	handle_key_release(int key, t_game *game)
 		player->rotate = 0;
 	if (key == XK_Right && player->rotate >= -1)
 		player->rotate = 0;
-	if (key == XK_z && player->move.y == 1)
+	if (key == XK_w && player->move.y == 1)
 		player->move.y = 0;
 	if (key == XK_s && player->move.y == -1)
 		player->move.y = 0;
-	if (key == XK_q && player->move.x == -1)
+	if (key == XK_a && player->move.x == -1)
 		player->move.x += 1;
 	if (key == XK_d && player->move.x == 1)
 		player->move.x -= 1;

@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 08:16:11 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/28 16:47:35 by qliso            ###   ########.fr       */
+/*   Updated: 2025/04/07 15:17:23 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,8 @@
 # define HEIGHT 720
 # define BLOCK 64
 # define FOV 0.66
-# define MOVESPEED 0.1
-# define ROTSPEED 0.05
+# define MOVESPEED 0.05
+# define ROTSPEED 0.03
 # define MOUSE_SENS 0.0001
 # define CROSSHAIR  6
 # define MINIMAP_W 40
@@ -319,7 +319,7 @@ int			set_player_rotation(t_game *game);
 void		rotate_vec2d(t_vec2D *v, double angle);
 void		door_raycast(t_game *game);
 void		init_door_raycast(t_raycast *ray, t_player *player);
-bool		launch_door_raycast(t_raycast *ray, t_game *game, int max_dist);
+int			launch_door_raycast(t_raycast *ray, t_game *game, int max_dist);
 void		handle_input(t_game *game);
 int			handle_key_press(int key, t_game *game);
 int			handle_key_release(int key, t_game *game);

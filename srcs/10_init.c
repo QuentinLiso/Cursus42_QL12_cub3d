@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:50:23 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/28 17:02:18 by qliso            ###   ########.fr       */
+/*   Updated: 2025/04/07 15:09:40 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void	init_tex(t_tex *tex)
 void	init_door_tex(t_tex *tex)
 {
 	tex->filled = true;
-	tex->path = "./64x/xpm/Glass.xpm";
+	tex->path = "./64x/xpm/door.xpm";
 	tex->color = 0x0;
 	init_empty_img(&tex->img);
 	ft_bzero(&tex->pixels, BLOCK * BLOCK * sizeof(int));

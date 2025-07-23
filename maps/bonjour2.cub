@@ -1,7 +1,7 @@
-NO ./64x/xpm/2D_TEXTURE.xpm
-SO ./64x/xpm/bookshelf.xpm
-WE ./64x/xpm/Boris2.xpm
-EA ./64x/xpm/Planks.xpm
+NO ./64x/xpm/m1.xpm
+SO ./64x/xpm/m2.xpm
+WE ./64x/xpm/m3.xpm
+EA ./64x/xpm/m4.xpm
 
 F 255,246,227
 C 191,236,255

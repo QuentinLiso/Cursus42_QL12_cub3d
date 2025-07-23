@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:54:11 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/28 16:02:19 by qliso            ###   ########.fr       */
+/*   Updated: 2025/04/07 13:28:40 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ void	draw_minimap(t_game *game)
 				color = 0x2C3930;
 			else if (mmap->map[mmap->pos.y][mmap->pos.x] == 'D')
 				color = 0xA1E3F9;
+			else if (mmap->map[mmap->pos.y][mmap->pos.x] == 'd')
+				color = 0xDDEB9D;
 			else
 				color = 0xA27B5C;
 			if (mmap->pos.y == MINIMAP_H / 2 && mmap->pos.x == MINIMAP_W / 2)

@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:51:54 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/28 15:49:00 by qliso            ###   ########.fr       */
+/*   Updated: 2025/04/07 13:19:49 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,12 +43,16 @@ void	door_raycast(t_game *game)
 {
 	t_raycast	ray;
 	t_player	*player;
+	int			raycast_result;
 
 	player = &game->player;
 	init_door_raycast(&ray, player);
 	init_dda_raycast(&ray, player);
-	if (launch_door_raycast(&ray, game, 2))
-		game->map[ray.map.y][ray.map.x] = '0';
+	raycast_result = launch_door_raycast(&ray, game, 2);
+	if (raycast_result == 1)
+		game->map[ray.map.y][ray.map.x] = 'd';
+	else if (raycast_result == 2)
+		game->map[ray.map.y][ray.map.x] = 'D';
 }
 
 void	init_door_raycast(t_raycast *ray, t_player *player)
@@ -62,7 +66,7 @@ void	init_door_raycast(t_raycast *ray, t_player *player)
 	ray->deltadist.y = (fabs(1 / ray->dir.y));
 }
 
-bool	launch_door_raycast(t_raycast *ray, t_game *game, int max_dist)
+int	launch_door_raycast(t_raycast *ray, t_game *game, int max_dist)
 {
 	int	steps;
 
@@ -80,9 +84,11 @@ bool	launch_door_raycast(t_raycast *ray, t_game *game, int max_dist)
 			ray->map.y += ray->step.y;
 		}
 		if (game->map[ray->map.y][ray->map.x] == 'D')
-			return (true);
+			return (1);
+		if (game->map[ray->map.y][ray->map.x] == 'd')
+			return (2);
 		if (game->map[ray->map.y][ray->map.x] == '1')
 			break ;
 	}
-	return (false);
+	return (0);
 }

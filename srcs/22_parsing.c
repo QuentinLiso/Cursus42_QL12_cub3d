@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:50:54 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/28 15:16:42 by qliso            ###   ########.fr       */
+/*   Updated: 2025/04/09 13:32:52 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,9 @@ int	get_text_file_path(char *line, int i, char **filepath)
 	if (!*filepath)
 		return (EMALLOC);
 	if (check_valid_file(*filepath, ".xpm"))
+	{
+		free_str(filepath);
 		return (EFILEEXT);
+	}
 	return (0);
 }

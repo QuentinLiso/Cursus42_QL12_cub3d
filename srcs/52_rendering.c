@@ -6,7 +6,7 @@
 /*   By: qliso <qliso@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:54:11 by qliso             #+#    #+#             */
-/*   Updated: 2025/03/28 15:55:34 by qliso            ###   ########.fr       */
+/*   Updated: 2025/04/07 13:25:10 by qliso            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ bool	collide_boundaries_i(t_game *game, t_vec2Di pos)
 
 bool	collide_walls_i(t_game *game, t_vec2Di pos)
 {
-	return (game->map[pos.y][pos.x] != '0');
+	return (game->map[pos.y][pos.x] != '0'
+			&& game->map[pos.y][pos.x] != 'd');
 }
 
 void	set_line_height(t_raycast *ray, t_player *player, t_game *game)
